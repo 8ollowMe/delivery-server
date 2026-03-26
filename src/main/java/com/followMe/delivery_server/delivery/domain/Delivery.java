@@ -32,6 +32,23 @@ public class Delivery extends BaseAudit {
 	private DeliveryStatus status;
 
 
+	@OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Shipment> shipments = new ArrayList<>();
+
+
+	private Delivery(UUID orderId, List<ShipmentInit> shipmentRequests) {
+		this.orderId = orderId;
+		this.status = DeliveryStatus.READY;
+		for (ShipmentInit shipmentRequest : shipmentRequests) {
+			ShipmentType type = shipmentRequest.shipmentType();
+			Node fromNode = shipmentRequest.fromNode();
+			Node toNode = shipmentRequest.toNode();
+			int sequence = shipmentRequest.sequence();
+			Shipment shipment = Shipment.create(this, sequence, type, fromNode, toNode);
+			this.shipments.add(shipment);
+		}
+	}
+
 	public static Delivery create(UUID orderId, List<ShipmentInit> shipmentRequests) {
 		return new Delivery(orderId, shipmentRequests);
 	}
