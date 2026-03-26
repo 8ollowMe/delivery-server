@@ -11,7 +11,7 @@ public enum DeliveryErrorCode implements ErrorCode {
   INVALID_DELIVERY_STATUS("D003", "배달 상태가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
   INVALID_SHIPMENT_STATUS("D004", "배송 상태가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
   INVALID_SHIPMENT_NODES("D005", "배송 노드 정보가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
-  INVALID_SHIPMENT_TYPE("D006", "배송 유형이 올바르지 않습니다.", HttpStatus.BAD_REQUEST) ,
+  INVALID_SHIPMENT_TYPE("D006", "배송 유형이 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String code;
@@ -32,5 +32,4 @@ public enum DeliveryErrorCode implements ErrorCode {
   public HttpStatus getHttpStatus() {
     return httpStatus;
   }
-
 }
