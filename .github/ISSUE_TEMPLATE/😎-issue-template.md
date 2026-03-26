@@ -1,6 +1,6 @@
 ---
 name: "\U0001F60E Issue template"
-about: Spring Boot 기반 배달 서비스 백엔드 프로젝트
+about: Spring Boot 기반 물류배송 서비스 백엔드 프로젝트
 title: ''
 labels: ''
 assignees: ''

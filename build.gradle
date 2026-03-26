@@ -22,15 +22,30 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {
+		url "https://maven.pkg.github.com/8ollowMe/common-lib"
+		credentials {
+			username = findProperty("gpr.user")
+			password = findProperty("gpr.key")
+		}
+	}
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.jooq:jooq'
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+	implementation 'com.followMe:common-lib:1.0.1'
 }
 
 tasks.named('test') {
