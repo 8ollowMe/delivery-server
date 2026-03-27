@@ -27,3 +27,4 @@ logs/
 
 # Test output
 test-results/
+gradle.properties

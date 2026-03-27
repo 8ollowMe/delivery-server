@@ -13,11 +13,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-public class OrderId {
-  @Column(nullable = false, columnDefinition = "uuid")
-  private UUID value;
+public class DeliveryManager {
+  @Column(columnDefinition = "uuid")
+  private UUID id;
 
-  public static OrderId of(UUID value) {
-    return new OrderId(value);
+  @Column(length = 50)
+  private String name;
+
+  public static DeliveryManager of(UUID deliveryManagerId, String deliveryManagerName) {
+    return new DeliveryManager(deliveryManagerId, deliveryManagerName);
   }
 }

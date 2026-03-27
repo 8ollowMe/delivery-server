@@ -4,6 +4,8 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidDeliveryStatusException;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,13 +28,17 @@ public class Delivery extends BaseAudit {
   @Column(nullable = false, length = 30)
   private DeliveryStatus status;
 
-  private Delivery(OrderId orderId) {
+  @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Shipment> shipments = new ArrayList<>();
+
+  private Delivery(OrderId orderId, List<Node> nodes) {
     this.orderId = orderId;
     this.status = DeliveryStatus.READY;
+    this.shipments = Shipment.createList(this, nodes);
   }
 
-  public static Delivery create(UUID orderId) {
-    return new Delivery(OrderId.of(orderId));
+  public static Delivery create(UUID orderId, List<Node> nodes) {
+    return new Delivery(OrderId.of(orderId), nodes);
   }
 
   public void start() {
