@@ -5,7 +5,6 @@ import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidShipmentStatusException;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidShipmentTypeException;
 import com.followMe.delivery_server.delivery.exception.DeliveryException.NodeTypeMismatchException;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -71,53 +70,40 @@ public class Shipment extends BaseAudit {
   private Instant arrivedAt;
   private Instant completedAt;
 
-  private Shipment(Delivery delivery, int sequence, ShipmentType type, Node fromNode, Node toNode) {
+  private Shipment(Delivery delivery, int sequence, Node fromNode, Node toNode) {
     this.delivery = delivery;
     this.sequence = sequence;
-    checkTypeAndNodes(type, fromNode, toNode);
-    this.type = type;
+    this.type = resolveType(fromNode, toNode);
     this.from = fromNode;
     this.to = toNode;
   }
 
-  private void checkTypeAndNodes(ShipmentType type, Node fromNode, Node toNode) {
-    switch (type) {
-      case HUB_TO_HUB -> {
-        if (fromNode.getType() != NodeType.HUB || toNode.getType() != NodeType.HUB) {
-          throw new NodeTypeMismatchException();
-        }
-      }
-      case HUB_TO_VENDOR -> {
-        if (fromNode.getType() != NodeType.HUB || toNode.getType() != NodeType.VENDOR) {
-          throw new NodeTypeMismatchException();
-        }
-      }
-      default -> throw new InvalidShipmentTypeException();
-    }
-  }
-
-  public static Shipment create(
-      Delivery delivery, int sequence, ShipmentType type, Node fromNode, Node toNode) {
-    return new Shipment(delivery, sequence, type, fromNode, toNode);
+  public static Shipment create(Delivery delivery, int sequence, Node fromNode, Node toNode) {
+    return new Shipment(delivery, sequence, fromNode, toNode);
   }
 
   public static List<Shipment> createList(Delivery delivery, List<Node> nodes) {
     List<Shipment> shipments = new ArrayList<>();
+
+    if (nodes.getLast().getType() != NodeType.VENDOR) throw new NodeTypeMismatchException();
+    if (nodes.stream().limit(nodes.size() - 1).anyMatch(n -> n.getType() == NodeType.VENDOR))
+      throw new NodeTypeMismatchException();
+
     for (int i = 0; i < nodes.size() - 1; i++) {
       Node fromNode = nodes.get(i);
       Node toNode = nodes.get(i + 1);
-      ShipmentType type;
-      if (fromNode.getType() == NodeType.HUB && toNode.getType() == NodeType.HUB) {
-        type = ShipmentType.HUB_TO_HUB;
-      } else if (fromNode.getType() == NodeType.HUB && toNode.getType() == NodeType.VENDOR) {
-        type = ShipmentType.HUB_TO_VENDOR;
-      } else {
-        throw new NodeTypeMismatchException();
-      }
-      Shipment shipment = new Shipment(delivery, i + 1, type, fromNode, toNode);
+      Shipment shipment = new Shipment(delivery, i + 1, fromNode, toNode);
       shipments.add(shipment);
     }
     return shipments;
+  }
+
+  private static ShipmentType resolveType(Node from, Node to) {
+    if (from.getType() == NodeType.HUB && to.getType() == NodeType.HUB)
+      return ShipmentType.HUB_TO_HUB;
+    if (from.getType() == NodeType.HUB && to.getType() == NodeType.VENDOR)
+      return ShipmentType.HUB_TO_VENDOR;
+    throw new NodeTypeMismatchException();
   }
 
   private void transitionTo(ShipmentStatus next) {
