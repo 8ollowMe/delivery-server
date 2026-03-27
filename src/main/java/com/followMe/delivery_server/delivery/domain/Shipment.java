@@ -67,4 +67,71 @@ public class Shipment extends BaseAudit {
   private Instant arrivedAt;
   private Instant completedAt;
 
+  private Shipment(Delivery delivery, int sequence, ShipmentType type, Node fromNode, Node toNode) {
+    this.delivery = delivery;
+    this.sequence = sequence;
+    checkTypeAndNodes(type, fromNode, toNode);
+    this.type = type;
+    this.from = fromNode;
+    this.to = toNode;
+  }
+
+  private void checkTypeAndNodes(ShipmentType type, Node fromNode, Node toNode) {
+    switch (type) {
+      case HUB_TO_HUB -> {
+        if (fromNode.getType() != NodeType.HUB || toNode.getType() != NodeType.HUB) {
+          throw new NodeTypeMismatchException();
+        }
+      }
+      case HUB_TO_VENDOR -> {
+        if (fromNode.getType() != NodeType.HUB || toNode.getType() != NodeType.VENDOR) {
+          throw new NodeTypeMismatchException();
+        }
+      }
+      default -> throw new InvalidShipmentTypeException();
+    }
+  }
+
+  public static Shipment create(
+      Delivery delivery, int sequence, ShipmentType type, Node fromNode, Node toNode) {
+    return new Shipment(delivery, sequence, type, fromNode, toNode);
+  }
+
+  private void transitionTo(ShipmentStatus next) {
+    if (!this.status.canTransitionTo(next)) {
+      throw new InvalidShipmentStatusException();
+    }
+    this.status = next;
+  }
+
+  public void assignDeliveryManager(DeliveryManager deliveryManager) {
+    this.deliveryManager = deliveryManager;
+  }
+
+  public void ship() {
+    transitionTo(ShipmentStatus.SHIPPED);
+    this.shippedAt = Instant.now();
+  }
+
+  public void transit() {
+    transitionTo(ShipmentStatus.IN_TRANSIT);
+  }
+
+  public void arrive() {
+    transitionTo(ShipmentStatus.ARRIVED);
+    this.arrivedAt = Instant.now();
+  }
+
+  public void complete() {
+    transitionTo(ShipmentStatus.COMPLETED);
+    this.completedAt = Instant.now();
+  }
+
+  public void fail() {
+    transitionTo(ShipmentStatus.FAILED);
+  }
+
+  public void cancel() {
+    transitionTo(ShipmentStatus.CANCELLED);
+  }
 }
