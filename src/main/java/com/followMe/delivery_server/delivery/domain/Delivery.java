@@ -20,8 +20,7 @@ public class Delivery extends BaseAudit {
   @Column(columnDefinition = "uuid")
   private UUID id;
 
-  @Embedded
-  private OrderId orderId;
+  @Embedded private OrderId orderId;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)

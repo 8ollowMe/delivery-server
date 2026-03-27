@@ -22,8 +22,4 @@ public enum DeliveryStatus {
   public boolean isTransitionNotAllowed(DeliveryStatus next) {
     return !allowedTransitions.contains(next);
   }
-
-  public boolean fixed() {
-    return allowedTransitions.isEmpty();
-  }
 }
