@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.dto;
+package com.followMe.delivery_server.delivery.application.dto;
 
 import java.util.UUID;
 

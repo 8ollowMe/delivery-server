@@ -1,8 +1,8 @@
-package com.followMe.delivery_server.client;
+package com.followMe.delivery_server.delivery.infra.hub;
 
-import com.followMe.delivery_server.client.dto.HubRouteResponse;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.HubClientUnavailableException;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.HubRouteNotFoundException;
+import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubRouteNotFoundException;
 import feign.FeignException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

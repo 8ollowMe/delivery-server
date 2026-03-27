@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.exception;
+package com.followMe.delivery_server.delivery.domain.exception;
 
 import com.followMe.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;

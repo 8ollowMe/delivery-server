@@ -4,7 +4,6 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.*;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;

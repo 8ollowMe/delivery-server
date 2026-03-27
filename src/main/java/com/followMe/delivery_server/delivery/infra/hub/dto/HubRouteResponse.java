@@ -1,7 +1,7 @@
-package com.followMe.delivery_server.client.dto;
+package com.followMe.delivery_server.delivery.infra.hub.dto;
 
 import com.followMe.delivery_server.delivery.domain.Node;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidNodeInformationException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidNodeInformationException;
 import java.util.List;
 
 public record HubRouteResponse(List<HubNodeInfo> nodes) {
