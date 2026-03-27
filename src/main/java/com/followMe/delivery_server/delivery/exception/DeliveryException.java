@@ -51,4 +51,10 @@ public class DeliveryException {
       super(DeliveryErrorCode.INVALID_SHIPMENT_TYPE);
     }
   }
+
+  public static class InvalidNodeInformationException extends BusinessException {
+    public InvalidNodeInformationException() {
+      super(DeliveryErrorCode.INVALID_NODE_INFORMATION);
+    }
+  }
 }

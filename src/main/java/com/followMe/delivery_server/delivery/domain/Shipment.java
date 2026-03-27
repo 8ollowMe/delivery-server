@@ -4,8 +4,7 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidShipmentStatusException;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.NodeTypeMismatchException;
+import com.followMe.delivery_server.delivery.exception.DeliveryException.*;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -85,9 +84,9 @@ public class Shipment extends BaseAudit {
   public static List<Shipment> createList(Delivery delivery, List<Node> nodes) {
     List<Shipment> shipments = new ArrayList<>();
 
-    if (nodes.getLast().getType() != NodeType.VENDOR) throw new NodeTypeMismatchException();
+    if (nodes.getLast().getType() != NodeType.VENDOR) throw new InvalidNodeInformationException();
     if (nodes.stream().limit(nodes.size() - 1).anyMatch(n -> n.getType() == NodeType.VENDOR))
-      throw new NodeTypeMismatchException();
+      throw new InvalidNodeInformationException();
 
     for (int i = 0; i < nodes.size() - 1; i++) {
       Node fromNode = nodes.get(i);
