@@ -22,7 +22,9 @@ public class Delivery extends BaseAudit {
   @Column(columnDefinition = "uuid")
   private UUID id;
 
-  @Embedded private OrderId orderId;
+  @Embedded
+  @AttributeOverrides({@AttributeOverride(name = "value", column = @Column(name = "order_id"))})
+  private OrderId orderId;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
