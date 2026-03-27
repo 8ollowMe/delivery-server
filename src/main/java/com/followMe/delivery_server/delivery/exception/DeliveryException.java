@@ -57,4 +57,16 @@ public class DeliveryException {
       super(DeliveryErrorCode.INVALID_NODE_INFORMATION);
     }
   }
+
+  public static class HubClientUnavailableException extends BusinessException {
+    public HubClientUnavailableException() {
+      super(DeliveryErrorCode.HUB_CLIENT_UNAVAILABLE);
+    }
+  }
+
+  public static class HubRouteNotFoundException extends BusinessException {
+    public HubRouteNotFoundException() {
+      super(DeliveryErrorCode.HUB_ROUTE_NOT_FOUND);
+    }
+  }
 }
