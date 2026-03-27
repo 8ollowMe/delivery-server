@@ -21,4 +21,22 @@ public class DeliveryException {
       super(DeliveryErrorCode.INVALID_DELIVERY_STATUS);
     }
   }
+
+  public static class ShipmentNotFoundException extends BusinessException {
+    public ShipmentNotFoundException() {
+      super(DeliveryErrorCode.SHIPMENT_NOT_FOUND);
+    }
+  }
+
+  public static class ShipmentAlreadyCompletedException extends BusinessException {
+    public ShipmentAlreadyCompletedException() {
+      super(DeliveryErrorCode.SHIPMENT_ALREADY_COMPLETED);
+    }
+  }
+
+  public static class InvalidShipmentStatusException extends BusinessException {
+    public InvalidShipmentStatusException() {
+      super(DeliveryErrorCode.INVALID_SHIPMENT_STATUS);
+    }
+  }
 }
