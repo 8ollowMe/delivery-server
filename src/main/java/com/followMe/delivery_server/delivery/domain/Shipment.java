@@ -4,9 +4,13 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.*;
+import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidShipmentStatusException;
+import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidShipmentTypeException;
+import com.followMe.delivery_server.delivery.exception.DeliveryException.NodeTypeMismatchException;
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -95,6 +99,25 @@ public class Shipment extends BaseAudit {
   public static Shipment create(
       Delivery delivery, int sequence, ShipmentType type, Node fromNode, Node toNode) {
     return new Shipment(delivery, sequence, type, fromNode, toNode);
+  }
+
+  public static List<Shipment> createList(Delivery delivery, List<Node> nodes) {
+    List<Shipment> shipments = new ArrayList<>();
+    for (int i = 0; i < nodes.size() - 1; i++) {
+      Node fromNode = nodes.get(i);
+      Node toNode = nodes.get(i + 1);
+      ShipmentType type;
+      if (fromNode.getType() == NodeType.HUB && toNode.getType() == NodeType.HUB) {
+        type = ShipmentType.HUB_TO_HUB;
+      } else if (fromNode.getType() == NodeType.HUB && toNode.getType() == NodeType.VENDOR) {
+        type = ShipmentType.HUB_TO_VENDOR;
+      } else {
+        throw new NodeTypeMismatchException();
+      }
+      Shipment shipment = new Shipment(delivery, i + 1, type, fromNode, toNode);
+      shipments.add(shipment);
+    }
+    return shipments;
   }
 
   private void transitionTo(ShipmentStatus next) {
