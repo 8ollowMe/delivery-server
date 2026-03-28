@@ -28,9 +28,9 @@ public class DeliveryServiceImpl implements DeliveryService {
   private final DeliveryQueryRepository deliveryQueryRepository;
   private final HubClient hubClient;
 
-  @Transactional
   @Override
-  public DeliveryCreateResponse createDelivery(OrderCreateCommand command) {
+  @Transactional
+  public void createDelivery(OrderCreateCommand command) {
 
     List<Node> nodes = hubClient.getNodes(command.sourceHubId(), command.vendorId()).toDomain();
     Delivery delivery = Delivery.create(command.orderId(), nodes);
@@ -42,7 +42,7 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Transactional(readOnly = true)
   public DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId) {
     DeliveryResponseDto deliveryResponseDto = deliveryQueryRepository.findDeliveryById(deliveryId);
-    checkAccess(user, deliveryResponseDto);
+    checkReadAccess(user, deliveryResponseDto);
     return deliveryResponseDto;
   }
 
@@ -56,10 +56,11 @@ public class DeliveryServiceImpl implements DeliveryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId) {
     DeliveryResponseDto deliveryResponseDto =
         deliveryQueryRepository.findDeliveryByOrderId(orderId);
-    checkAccess(user, deliveryResponseDto);
+    checkReadAccess(user, deliveryResponseDto);
     return deliveryResponseDto;
   }
 }
