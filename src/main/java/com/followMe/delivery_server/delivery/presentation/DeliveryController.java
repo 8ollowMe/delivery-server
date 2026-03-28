@@ -4,6 +4,7 @@ import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
@@ -21,9 +22,11 @@ public class DeliveryController {
 
   @GetMapping
   public ResponseEntity<ApiResponse> getDeliveries(
-      @ModelAttribute PageRequest pageRequest, @ModelAttribute DeliverySearchCondition condition) {
-    PageResponse<DeliveryResponseDto> response =
-        deliveryService.getDeliveries(pageRequest, condition);
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @ModelAttribute DeliverySearchCondition condition) {
+    PageResponse<DeliveryListItemDto> response =
+        deliveryService.getDeliveries(PageRequest.of(page, size), condition);
     return ApiResponse.ok(response);
   }
 

@@ -9,8 +9,8 @@ import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
-import com.followMe.delivery_server.delivery.infra.DeliveryQueryRepository;
 import com.followMe.delivery_server.delivery.infra.hub.HubClient;
+import com.followMe.delivery_server.delivery.infra.query.DeliveryQueryRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   @Transactional(readOnly = true)
-  public PageResponse<DeliveryResponseDto> getDeliveries(
+  public PageResponse<DeliveryListItemDto> getDeliveries(
       PageRequest pageRequest, DeliverySearchCondition condition) {
     return deliveryQueryRepository.findDeliveries(pageRequest, condition);
   }
