@@ -36,4 +36,40 @@ public class DeliveryQueryRepository {
     if (records.isEmpty()) throw new DeliveryNotFoundException();
     return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
   }
+
+  public PageResponse<DeliveryResponseDto> findDeliveries(
+      PageRequest pageRequest, DeliverySearchCondition condition) {
+
+    SortField<?> sortField = conditionBuilder.buildSortField(condition);
+    SelectConditionStep<Record1<UUID>> baseQuery = conditionBuilder.buildDeliveryIdQuery(condition);
+
+    long total = dsl.fetchCount(baseQuery);
+
+    List<UUID> deliveryIds =
+        baseQuery
+            .orderBy(sortField)
+            .limit(pageRequest.getSize())
+            .offset((long) pageRequest.getPage() * pageRequest.getSize())
+            .fetch(P_DELIVERY.ID);
+
+    if (deliveryIds.isEmpty()) {
+      return PageResponse.of(List.of(), pageRequest.getPage(), pageRequest.getSize(), total);
+    }
+
+    Result<Record> records =
+        dsl.select()
+            .from(P_DELIVERY)
+            .leftJoin(P_SHIPMENT)
+            .on(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+            .where(P_DELIVERY.ID.in(deliveryIds))
+            .orderBy(sortField, P_SHIPMENT.SEQUENCE.asc())
+            .fetch();
+
+    List<DeliveryResponseDto> content =
+        records.intoGroups(P_DELIVERY.ID).values().stream()
+            .map(group -> recordMapper.toDeliveryResponse(group.getFirst(), group.stream()))
+            .toList();
+
+    return PageResponse.of(content, pageRequest.getPage(), pageRequest.getSize(), total);
+  }
 }

@@ -25,7 +25,8 @@ public class DeliveryConditionBuilder {
   private final DSLContext dsl;
 
   public SelectConditionStep<Record1<UUID>> buildDeliveryIdQuery(
-      List<Condition> conditions, DeliverySearchCondition condition) {
+      DeliverySearchCondition condition) {
+    List<Condition> conditions = buildConditions(condition);
     if (needsShipmentJoin(condition)) {
       return dsl.selectDistinct(P_DELIVERY.ID)
           .from(P_DELIVERY)
@@ -36,7 +37,7 @@ public class DeliveryConditionBuilder {
     return dsl.selectDistinct(P_DELIVERY.ID).from(P_DELIVERY).where(conditions);
   }
 
-  public List<Condition> buildConditions(DeliverySearchCondition condition) {
+  private List<Condition> buildConditions(DeliverySearchCondition condition) {
     List<Condition> conditions = new ArrayList<>();
     conditions.add(P_DELIVERY.DELETED_AT.isNull());
 

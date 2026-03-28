@@ -1,12 +1,15 @@
 package com.followMe.delivery_server.delivery.application;
 
-import com.followMe.delivery_server.delivery.infra.hub.HubClient;
+import com.followMe.common.pagination.PageRequest;
+import com.followMe.common.pagination.PageResponse;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
+import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
+import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
-import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
-import com.followMe.delivery_server.delivery.infra.DeliveryQueryRepository;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.infra.DeliveryQueryRepository;
+import com.followMe.delivery_server.delivery.infra.hub.HubClient;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +37,12 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Transactional(readOnly = true)
   public DeliveryResponseDto getDelivery(UUID deliveryId) {
     return deliveryQueryRepository.findDeliveryById(deliveryId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public PageResponse<DeliveryResponseDto> getDeliveries(
+      PageRequest pageRequest, DeliverySearchCondition condition) {
+    return deliveryQueryRepository.findDeliveries(pageRequest, condition);
   }
 }
