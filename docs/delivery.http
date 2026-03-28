@@ -1,0 +1,27 @@
+### 배송 목록 조회 (전체)
+GET http://localhost:8081/api/v1/deliveries?page=0&size=10
+
+### 배송 목록 조회 (상태 필터)
+GET http://localhost:8081/api/v1/deliveries?page=0&size=10&status=READY
+
+### 배송 목록 조회 (담당자 필터)
+GET http://localhost:8081/api/v1/deliveries?page=0&size=10&deliveryManagerId=eeeeeeee-0000-0000-0000-000000000001
+
+### 배송 목록 조회 (정렬 - 오래된 순)
+GET http://localhost:8081/api/v1/deliveries?page=0&size=10&sortBy=createdAt&direction=ASC
+
+### 배송 단건 조회 (READY - shipment 2개)
+GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
+
+### 배송 단건 조회 (IN_PROGRESS - 담당자 배정)
+GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000002
+
+### 배송 생성
+POST http://localhost:8081/api/v1/deliveries
+Content-Type: application/json
+
+{
+  "orderId": "bbbbbbbb-0000-0000-0000-000000000001",
+  "sourceHubId": "dddddddd-0000-0000-0000-000000000001",
+  "vendorId": "dddddddd-0000-0000-0000-000000000003"
+}
