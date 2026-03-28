@@ -1,7 +1,6 @@
 package com.followMe.delivery_server.delivery.application;
 
-import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkAccess;
-import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkListAccess;
+import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.*;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
@@ -11,6 +10,7 @@ import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondi
 import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.infra.hub.HubClient;
 import com.followMe.delivery_server.delivery.infra.query.DeliveryQueryRepository;
@@ -62,5 +62,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryQueryRepository.findDeliveryByOrderId(orderId);
     checkReadAccess(user, deliveryResponseDto);
     return deliveryResponseDto;
+  }
+
+  @Override
+  @Transactional
+  public void cancelDelivery(UserContext user, UUID deliveryId) {
+    Delivery delivery =
+        deliveryRepository
+            .findById(deliveryId)
+            .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
+    checkCancelAccess(user, delivery);
+    delivery.cancel();
   }
 }

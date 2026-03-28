@@ -18,4 +18,6 @@ public interface DeliveryService {
       UserContext user, PageRequest pageRequest, DeliverySearchCondition condition);
 
   DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId);
+
+  void cancelDelivery(UserContext user, UUID deliveryId);
 }

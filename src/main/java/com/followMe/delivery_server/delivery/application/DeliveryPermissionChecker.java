@@ -17,7 +17,25 @@ public class DeliveryPermissionChecker {
 
     checkReadAccess(user, shipmentInfoIds.nodeIds, shipmentInfoIds.managerIds);
   }
+
+  public static void checkCancelAccess(UserContext user, Delivery delivery) {
+    ShipmentInfoIds shipmentInfoIds = getShipmentInfoIds(delivery.getShipments());
+    switch (user.role()) {
+      case MASTER -> {}
+      case HUB_MANAGER -> {
+        if (user.hubId() == null || !shipmentInfoIds.nodeIds.contains(user.hubId())) {
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        }
+      }
+      case VENDOR -> {
+        Shipment lastShipment = delivery.getShipments().getLast();
+        if (user.vendorId() == null || !user.vendorId().equals(lastShipment.getTo().getId())) {
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        }
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
     }
+  }
     }
   }
 

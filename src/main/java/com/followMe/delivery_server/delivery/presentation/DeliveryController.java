@@ -61,4 +61,11 @@ public class DeliveryController {
     DeliveryResponseDto response = deliveryService.getDelivery(user, deliveryId);
     return ApiResponse.ok(response);
   }
+
+  @PatchMapping("/{deliveryId}/cancel")
+  public ResponseEntity<ApiResponse> cancelDelivery(
+      @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
+    deliveryService.cancelDelivery(user, deliveryId);
+    return ApiResponse.ok();
+  }
 }

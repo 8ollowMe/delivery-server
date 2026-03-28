@@ -68,6 +68,7 @@ public class Delivery extends BaseAudit {
     if (this.status.isTransitionNotAllowed(DeliveryStatus.CANCELLED)) {
       throw new InvalidDeliveryStatusException();
     }
+    this.shipments.forEach(Shipment::cancel);
     this.status = DeliveryStatus.CANCELLED;
   }
 
