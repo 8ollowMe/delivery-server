@@ -12,10 +12,10 @@ public interface DeliveryService {
 
   DeliveryCreateResponse createDelivery(OrderCreateCommand command);
 
-  DeliveryResponseDto getDelivery(UUID deliveryId);
+  DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId);
 
   PageResponse<DeliveryListItemDto> getDeliveries(
       PageRequest pageRequest, DeliverySearchCondition condition);
 
-  DeliveryResponseDto getDeliveryByOrderId(UUID orderId);
+  DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId);
 }

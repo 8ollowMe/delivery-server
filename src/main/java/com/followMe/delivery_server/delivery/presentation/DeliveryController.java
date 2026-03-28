@@ -4,6 +4,7 @@ import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
+import com.followMe.delivery_server.delivery.application.UserContext;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
@@ -37,14 +38,16 @@ public class DeliveryController {
   }
 
   @GetMapping("/order/{orderId}")
-  public ResponseEntity<ApiResponse> getDeliveryByOrderId(@PathVariable UUID orderId) {
-    DeliveryResponseDto response = deliveryService.getDeliveryByOrderId(orderId);
+  public ResponseEntity<ApiResponse> getDeliveryByOrderId(
+      @PathVariable UUID orderId, @ModelAttribute UserContext user) {
+    DeliveryResponseDto response = deliveryService.getDeliveryByOrderId(user, orderId);
     return ApiResponse.ok(response);
   }
 
   @GetMapping("/{deliveryId}")
-  public ResponseEntity<ApiResponse> getDelivery(@PathVariable UUID deliveryId) {
-    DeliveryResponseDto response = deliveryService.getDelivery(deliveryId);
+  public ResponseEntity<ApiResponse> getDelivery(
+      @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
+    DeliveryResponseDto response = deliveryService.getDelivery(user, deliveryId);
     return ApiResponse.ok(response);
   }
 }

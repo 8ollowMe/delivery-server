@@ -1,5 +1,6 @@
 package com.followMe.delivery_server.delivery.application;
 
+import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkAccess;
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
@@ -37,8 +38,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   @Transactional(readOnly = true)
-  public DeliveryResponseDto getDelivery(UUID deliveryId) {
-    return deliveryQueryRepository.findDeliveryById(deliveryId);
+  public DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId) {
+    DeliveryResponseDto deliveryResponseDto = deliveryQueryRepository.findDeliveryById(deliveryId);
+    checkAccess(user, deliveryResponseDto);
+    return deliveryResponseDto;
   }
 
   @Override
@@ -49,7 +52,10 @@ public class DeliveryServiceImpl implements DeliveryService {
   }
 
   @Override
-  public DeliveryResponseDto getDeliveryByOrderId(UUID orderId) {
-    return deliveryQueryRepository.findDeliveryByOrderId(orderId);
+  public DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId) {
+    DeliveryResponseDto deliveryResponseDto =
+        deliveryQueryRepository.findDeliveryByOrderId(orderId);
+    checkAccess(user, deliveryResponseDto);
+    return deliveryResponseDto;
   }
 }
