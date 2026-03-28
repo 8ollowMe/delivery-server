@@ -29,4 +29,10 @@ public class DeliveryServiceImpl implements DeliveryService {
     Delivery delivery = Delivery.create(command.orderId(), nodes);
     deliveryRepository.save(delivery);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public DeliveryResponseDto getDelivery(UUID deliveryId) {
+    return deliveryQueryRepository.findDeliveryById(deliveryId);
+  }
 }

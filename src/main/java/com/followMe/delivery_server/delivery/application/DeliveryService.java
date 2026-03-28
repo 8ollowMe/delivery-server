@@ -6,4 +6,5 @@ public interface DeliveryService {
 
   void createDelivery(OrderCreateCommand command);
 
+  DeliveryResponseDto getDelivery(UUID deliveryId);
 }
