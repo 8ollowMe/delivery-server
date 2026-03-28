@@ -72,4 +72,18 @@ public class DeliveryQueryRepository {
 
     return PageResponse.of(content, pageRequest.getPage(), pageRequest.getSize(), total);
   }
+
+  public DeliveryResponseDto findDeliveryByOrderId(UUID orderId) {
+    Result<Record> records =
+            dsl.select()
+                    .from(P_DELIVERY)
+                    .leftJoin(P_SHIPMENT)
+                    .on(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+                    .where(P_DELIVERY.ORDER_ID.eq(orderId))
+                    .orderBy(P_SHIPMENT.SEQUENCE.asc())
+                    .fetch();
+
+    if (records.isEmpty()) throw new DeliveryNotFoundException();
+    return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
+  }
 }

@@ -33,6 +33,12 @@ public class DeliveryController {
     return ApiResponse.ok();
   }
 
+  @GetMapping("/order/{orderId}")
+  public ResponseEntity<ApiResponse> getDeliveryByOrderId(@PathVariable UUID orderId) {
+    DeliveryResponseDto response = deliveryService.getDeliveryByOrderId(orderId);
+    return ApiResponse.ok(response);
+  }
+
   @GetMapping("/{deliveryId}")
   public ResponseEntity<ApiResponse> getDelivery(@PathVariable UUID deliveryId) {
     DeliveryResponseDto response = deliveryService.getDelivery(deliveryId);

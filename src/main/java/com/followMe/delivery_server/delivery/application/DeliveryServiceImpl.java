@@ -47,4 +47,9 @@ public class DeliveryServiceImpl implements DeliveryService {
       PageRequest pageRequest, DeliverySearchCondition condition) {
     return deliveryQueryRepository.findDeliveries(pageRequest, condition);
   }
+
+  @Override
+  public DeliveryResponseDto getDeliveryByOrderId(UUID orderId) {
+    return deliveryQueryRepository.findDeliveryByOrderId(orderId);
+  }
 }
