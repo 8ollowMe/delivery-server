@@ -1,6 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.hub;
 
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubClientUnavailableException;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubNodeInfo;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
 import java.util.List;
@@ -17,10 +18,15 @@ import org.springframework.stereotype.Component;
 public class HubClientLocalStub implements HubClient {
 
   private static final UUID MIDDLE_HUB_ID = UUID.fromString("dddddddd-0000-0000-0000-000000000002");
+  private static final String UNKNOWN_SUFFIX = "0000-000000000099";
 
   @Override
   public HubRouteResponse getNodes(UUID sourceHubId, UUID vendorId) {
     log.info("[LocalStub] HubClient.getNodes sourceHubId={} vendorId={}", sourceHubId, vendorId);
+    if (sourceHubId.toString().endsWith(UNKNOWN_SUFFIX)
+        || vendorId.toString().endsWith(UNKNOWN_SUFFIX)) {
+      throw new HubClientUnavailableException();
+    }
     return new HubRouteResponse(
         List.of(
             new HubNodeInfo(sourceHubId, NodeType.HUB, "출발 허브", 1),
