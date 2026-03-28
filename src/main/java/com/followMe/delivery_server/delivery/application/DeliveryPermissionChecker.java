@@ -36,6 +36,17 @@ public class DeliveryPermissionChecker {
       default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
     }
   }
+
+  public static void checkDeleteAccess(UserContext user, Delivery delivery) {
+    switch (user.role()) {
+      case MASTER -> {}
+      case HUB_MANAGER -> {
+        Shipment firstShipment = delivery.getShipments().getFirst();
+        if (user.hubId() == null || !user.hubId().equals(firstShipment.getFrom().getId())) {
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        }
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
     }
   }
 
@@ -98,5 +109,6 @@ public class DeliveryPermissionChecker {
   private static void checkIfAssignedToUser(UUID userId, Set<UUID> managerIds) {
     if (!managerIds.contains(userId)) {
       throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
   }
 }

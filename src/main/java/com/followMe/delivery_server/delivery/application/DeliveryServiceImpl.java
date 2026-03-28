@@ -74,4 +74,15 @@ public class DeliveryServiceImpl implements DeliveryService {
     checkCancelAccess(user, delivery);
     delivery.cancel();
   }
+
+  @Override
+  @Transactional
+  public void deleteDelivery(UserContext user, UUID deliveryId) {
+    Delivery delivery =
+        deliveryRepository
+            .findById(deliveryId)
+            .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
+    checkDeleteAccess(user, delivery);
+    delivery.softDelete(user.userId());
+  }
 }

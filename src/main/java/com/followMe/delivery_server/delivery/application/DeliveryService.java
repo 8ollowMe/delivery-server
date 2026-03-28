@@ -20,4 +20,6 @@ public interface DeliveryService {
   DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId);
 
   void cancelDelivery(UserContext user, UUID deliveryId);
+
+  void deleteDelivery(UserContext user, UUID deliveryId);
 }

@@ -74,5 +74,7 @@ public class Delivery extends BaseAudit {
 
   public void softDelete(UUID deletedBy) {
     super.softDelete(deletedBy.toString());
+    this.shipments.forEach(shipment -> shipment.softDelete(deletedBy.toString()));
+  }
   }
 }

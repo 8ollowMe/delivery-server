@@ -68,4 +68,11 @@ public class DeliveryController {
     deliveryService.cancelDelivery(user, deliveryId);
     return ApiResponse.ok();
   }
+
+  @DeleteMapping("/{deliveryId}")
+  public ResponseEntity<ApiResponse> deleteDelivery(
+      @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
+    deliveryService.deleteDelivery(user, deliveryId);
+    return ApiResponse.ok();
+  }
 }
