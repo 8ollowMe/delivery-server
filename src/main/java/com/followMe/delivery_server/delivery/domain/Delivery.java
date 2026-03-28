@@ -76,5 +76,11 @@ public class Delivery extends BaseAudit {
     super.softDelete(deletedBy.toString());
     this.shipments.forEach(shipment -> shipment.softDelete(deletedBy.toString()));
   }
+
+  public void updateStatus(DeliveryStatus status) {
+    if (this.status.isTransitionNotAllowed(status)) {
+      throw new InvalidDeliveryStatusException();
+    }
+    this.status = status;
   }
 }
