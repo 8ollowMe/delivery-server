@@ -4,6 +4,7 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.*;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -63,6 +64,8 @@ public class Shipment extends BaseAudit {
     @AttributeOverride(name = "name", column = @Column(name = "delivery_manager_name"))
   })
   private DeliveryManager deliveryManager;
+
+  @Version private Integer _version;
 
   private Instant shippedAt;
   private Instant arrivedAt;

@@ -6,6 +6,7 @@ import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
+import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,11 @@ public class DeliveryController {
     return ApiResponse.ok(response);
   }
 
+  @PostMapping
+  public ResponseEntity<ApiResponse> createDelivery(@RequestBody OrderCreateCommand command) {
+    deliveryService.createDelivery(command);
+    return ApiResponse.ok();
+  }
 
   @GetMapping("/{deliveryId}")
   public ResponseEntity<ApiResponse> getDelivery(@PathVariable UUID deliveryId) {
