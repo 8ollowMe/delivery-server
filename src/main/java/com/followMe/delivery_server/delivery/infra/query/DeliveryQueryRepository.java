@@ -1,10 +1,11 @@
-package com.followMe.delivery_server.delivery.infra;
+package com.followMe.delivery_server.delivery.infra.query;
 
 import static com.followMe.delivery_server.jooq.tables.PDelivery.P_DELIVERY;
 import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.DeliveryNotFoundException;
@@ -13,6 +14,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.*;
 import org.jooq.Record;
+import org.jooq.SelectOrderByStep;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -37,11 +39,11 @@ public class DeliveryQueryRepository {
     return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
   }
 
-  public PageResponse<DeliveryResponseDto> findDeliveries(
+  public PageResponse<DeliveryListItemDto> findDeliveries(
       PageRequest pageRequest, DeliverySearchCondition condition) {
 
     SortField<?> sortField = conditionBuilder.buildSortField(condition);
-    SelectConditionStep<Record1<UUID>> baseQuery = conditionBuilder.buildDeliveryIdQuery(condition);
+    SelectOrderByStep<Record1<UUID>> baseQuery = conditionBuilder.buildDeliveryIdQuery(condition);
 
     long total = dsl.fetchCount(baseQuery);
 
@@ -65,9 +67,9 @@ public class DeliveryQueryRepository {
             .orderBy(sortField, P_SHIPMENT.SEQUENCE.asc())
             .fetch();
 
-    List<DeliveryResponseDto> content =
+    List<DeliveryListItemDto> content =
         records.intoGroups(P_DELIVERY.ID).values().stream()
-            .map(group -> recordMapper.toDeliveryResponse(group.getFirst(), group.stream()))
+            .map(group -> recordMapper.toListItemDto(group.getFirst(), group))
             .toList();
 
     return PageResponse.of(content, pageRequest.getPage(), pageRequest.getSize(), total);
@@ -75,13 +77,13 @@ public class DeliveryQueryRepository {
 
   public DeliveryResponseDto findDeliveryByOrderId(UUID orderId) {
     Result<Record> records =
-            dsl.select()
-                    .from(P_DELIVERY)
-                    .leftJoin(P_SHIPMENT)
-                    .on(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                    .where(P_DELIVERY.ORDER_ID.eq(orderId))
-                    .orderBy(P_SHIPMENT.SEQUENCE.asc())
-                    .fetch();
+        dsl.select()
+            .from(P_DELIVERY)
+            .leftJoin(P_SHIPMENT)
+            .on(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+            .where(P_DELIVERY.ORDER_ID.eq(orderId))
+            .orderBy(P_SHIPMENT.SEQUENCE.asc())
+            .fetch();
 
     if (records.isEmpty()) throw new DeliveryNotFoundException();
     return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());

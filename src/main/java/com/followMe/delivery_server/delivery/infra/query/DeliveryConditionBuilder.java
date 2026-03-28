@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.infra;
+package com.followMe.delivery_server.delivery.infra.query;
 
 import static com.followMe.delivery_server.jooq.tables.PDelivery.P_DELIVERY;
 import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
@@ -19,17 +19,17 @@ public class DeliveryConditionBuilder {
 
   private final DSLContext dsl;
 
-  public SelectConditionStep<Record1<UUID>> buildDeliveryIdQuery(
-      DeliverySearchCondition condition) {
+  public SelectOrderByStep<Record1<UUID>> buildDeliveryIdQuery(DeliverySearchCondition condition) {
     List<Condition> conditions = buildConditions(condition);
     if (needsShipmentJoin(condition)) {
-      return dsl.selectDistinct(P_DELIVERY.ID)
+      return dsl.select(P_DELIVERY.ID)
           .from(P_DELIVERY)
           .leftJoin(P_SHIPMENT)
           .on(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-          .where(conditions);
+          .where(conditions)
+          .groupBy(P_DELIVERY.ID);
     }
-    return dsl.selectDistinct(P_DELIVERY.ID).from(P_DELIVERY).where(conditions);
+    return dsl.select(P_DELIVERY.ID).from(P_DELIVERY).where(conditions);
   }
 
   private List<Condition> buildConditions(DeliverySearchCondition condition) {
