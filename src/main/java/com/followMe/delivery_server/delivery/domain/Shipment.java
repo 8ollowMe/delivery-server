@@ -67,7 +67,7 @@ public class Shipment extends BaseAudit {
   })
   private DeliveryManager deliveryManager;
 
-  @Version private Integer _version;
+  @Version private int _version;
 
   private Instant shippedAt;
   private Instant arrivedAt;
