@@ -2,6 +2,7 @@ package com.followMe.delivery_server.delivery.application.dto;
 
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record DeliveryListItemDto(
@@ -13,5 +14,6 @@ public record DeliveryListItemDto(
     int totalShipments,
     int completedShipments,
     DeliveryResponse.NodeResponse lastestProgressedNode,
-    ShipmentStatus currentProgressStatus)
+    ShipmentStatus currentProgressStatus,
+    LocalDateTime createdAt)
     implements DeliveryResponse {}

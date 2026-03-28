@@ -1,6 +1,8 @@
 package com.followMe.delivery_server.delivery.application;
 
 import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkAccess;
+import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkListAccess;
+
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
@@ -47,7 +49,9 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Override
   @Transactional(readOnly = true)
   public PageResponse<DeliveryListItemDto> getDeliveries(
-      PageRequest pageRequest, DeliverySearchCondition condition) {
+      UserContext user, PageRequest pageRequest, DeliverySearchCondition condition) {
+
+    checkListAccess(user, condition);
     return deliveryQueryRepository.findDeliveries(pageRequest, condition);
   }
 

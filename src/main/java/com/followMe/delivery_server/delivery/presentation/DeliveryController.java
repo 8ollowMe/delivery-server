@@ -5,6 +5,7 @@ import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.UserContext;
+import com.followMe.delivery_server.delivery.application.UserRole;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
@@ -21,13 +22,23 @@ public class DeliveryController {
 
   private final DeliveryService deliveryService;
 
+  @ModelAttribute
+  public UserContext userContext(
+      @RequestHeader("X-User-Id") UUID userId,
+      @RequestHeader("X-User-Role") UserRole role,
+      @RequestHeader(value = "X-Hub-Id", required = false) UUID hubId,
+      @RequestHeader(value = "X-Vendor-Id", required = false) UUID vendorId) {
+    return new UserContext(userId, role, hubId, vendorId);
+  }
+
   @GetMapping
   public ResponseEntity<ApiResponse> getDeliveries(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @ModelAttribute DeliverySearchCondition condition) {
+      @ModelAttribute DeliverySearchCondition condition,
+      @ModelAttribute UserContext user) {
     PageResponse<DeliveryListItemDto> response =
-        deliveryService.getDeliveries(PageRequest.of(page, size), condition);
+        deliveryService.getDeliveries(user, PageRequest.of(page, size), condition);
     return ApiResponse.ok(response);
   }
 

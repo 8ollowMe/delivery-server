@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 public record DeliveryResponseDto(
-    UUID id, UUID orderId, DeliveryStatus status, List<ShipmentResponse> shipments)
+    UUID id,
+    UUID orderId,
+    DeliveryStatus status,
+    List<ShipmentResponse> shipments,
+    LocalDateTime createdAt)
     implements DeliveryResponse {
 
   public record ShipmentResponse(

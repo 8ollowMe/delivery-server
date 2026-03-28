@@ -15,7 +15,7 @@ public interface DeliveryService {
   DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId);
 
   PageResponse<DeliveryListItemDto> getDeliveries(
-      PageRequest pageRequest, DeliverySearchCondition condition);
+      UserContext user, PageRequest pageRequest, DeliverySearchCondition condition);
 
   DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId);
 }

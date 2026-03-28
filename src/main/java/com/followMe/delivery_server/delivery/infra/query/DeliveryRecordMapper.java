@@ -29,7 +29,8 @@ public class DeliveryRecordMapper {
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
         DeliveryStatus.valueOf(first.get(P_DELIVERY.STATUS)),
-        shipments);
+        shipments,
+        first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
   public DeliveryListItemDto toListItemDto(Record first, Result<Record> group) {
@@ -45,7 +46,8 @@ public class DeliveryRecordMapper {
           0,
           0,
           null,
-          null);
+          null,
+          first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
     }
     int totalShipments = shipments.size();
     int completedShipments = 0;
@@ -83,7 +85,8 @@ public class DeliveryRecordMapper {
         totalShipments,
         completedShipments,
         latestProgressedNode,
-        lastShipmentStatus);
+        lastShipmentStatus,
+        first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
   private NodeResponse fromNodeOf(Record r) {
@@ -108,8 +111,10 @@ public class DeliveryRecordMapper {
         ShipmentType.valueOf(r.get(P_SHIPMENT.TYPE)),
         fromNodeOf(r),
         toNodeOf(r),
-        new DeliveryManagerResponse(
-            r.get(P_SHIPMENT.DELIVERY_MANAGER_ID), r.get(P_SHIPMENT.DELIVERY_MANAGER_NAME)),
+        r.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
+            ? new DeliveryManagerResponse(
+                r.get(P_SHIPMENT.DELIVERY_MANAGER_ID), r.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
+            : null,
         r.get(P_SHIPMENT.SHIPPED_AT) != null
             ? r.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
             : null,
