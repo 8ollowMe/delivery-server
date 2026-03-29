@@ -2,6 +2,7 @@ package com.followMe.delivery_server.delivery.application;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
@@ -26,11 +27,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Transactional
   @Override
-  public void createDelivery(OrderCreateCommand command) {
+  public DeliveryCreateResponse createDelivery(OrderCreateCommand command) {
 
     List<Node> nodes = hubClient.getNodes(command.sourceHubId(), command.vendorId()).toDomain();
     Delivery delivery = Delivery.create(command.orderId(), nodes);
     deliveryRepository.save(delivery);
+    return new DeliveryCreateResponse(delivery.getId());
   }
 
   @Override
