@@ -9,12 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record1;
-import org.jooq.SelectConditionStep;
-import org.jooq.SortField;
+import org.jooq.*;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
