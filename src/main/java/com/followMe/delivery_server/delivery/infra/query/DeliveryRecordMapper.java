@@ -3,15 +3,12 @@ package com.followMe.delivery_server.delivery.infra.query;
 import static com.followMe.delivery_server.jooq.tables.PDelivery.P_DELIVERY;
 import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
-import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse.NodeResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto.DeliveryManagerResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
+import com.followMe.delivery_server.delivery.presentation.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.stream.Stream;
 import org.jooq.Record;
@@ -21,23 +18,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeliveryRecordMapper {
 
-  public DeliveryResponseDto toDeliveryResponse(Record first, Stream<Record> records) {
-    List<ShipmentResponse> shipments =
-        records.filter(r -> r.get(P_SHIPMENT.ID) != null).map(this::toShipmentResponse).toList();
+  public DeliveryResponse.Detail toDetail(Record first, Stream<Record> records) {
+    List<ShipmentResponse.Detail> shipments =
+        records.filter(r -> r.get(P_SHIPMENT.ID) != null).map(this::toShipmentDetail).toList();
 
-    return new DeliveryResponseDto(
+    return new DeliveryResponse.Detail(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
-        deriveDeliveryStatus(shipments.stream().map(ShipmentResponse::status).toList()),
+        deriveDeliveryStatus(shipments.stream().map(ShipmentResponse.Detail::status).toList()),
         shipments,
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
-  public DeliveryListItemDto toListItemDto(Record first, Result<Record> group) {
+  public DeliveryResponse.ListItem toListItem(Record first, Result<Record> group) {
     List<Record> shipments = group.stream().filter(r -> r.get(P_SHIPMENT.ID) != null).toList();
 
     if (shipments.isEmpty()) {
-      return new DeliveryListItemDto(
+      return new DeliveryResponse.ListItem(
           first.get(P_DELIVERY.ID),
           first.get(P_DELIVERY.ORDER_ID),
           DeliveryStatus.READY,
@@ -49,14 +46,14 @@ public class DeliveryRecordMapper {
           null,
           first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
     }
+
     int totalShipments = shipments.size();
     int completedShipments = 0;
-
-    NodeResponse fromHub = null;
-    NodeResponse toVendor = null;
-
-    NodeResponse latestProgressedNode = null;
+    DeliveryResponse.NodeInfo fromHub = null;
+    DeliveryResponse.NodeInfo toVendor = null;
+    DeliveryResponse.NodeInfo latestProgressedNode = null;
     ShipmentStatus lastShipmentStatus = null;
+
     for (Record shipment : shipments) {
       if (shipment.get(P_SHIPMENT.SEQUENCE).equals(1)) {
         fromHub = fromNodeOf(shipment);
@@ -64,7 +61,6 @@ public class DeliveryRecordMapper {
       if (shipment.get(P_SHIPMENT.SEQUENCE).equals(totalShipments)) {
         toVendor = toNodeOf(shipment);
       }
-
       ShipmentStatus status = ShipmentStatus.valueOf(shipment.get(P_SHIPMENT.STATUS));
       if (status == ShipmentStatus.COMPLETED) {
         completedShipments++;
@@ -79,7 +75,7 @@ public class DeliveryRecordMapper {
     List<ShipmentStatus> statuses =
         shipments.stream().map(r -> ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS))).toList();
 
-    return new DeliveryListItemDto(
+    return new DeliveryResponse.ListItem(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
         deriveDeliveryStatus(statuses),
@@ -92,12 +88,12 @@ public class DeliveryRecordMapper {
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
-  public List<ShipmentResponse> toShipmentResponseList(Result<Record> records) {
-    return records.map(this::toShipmentResponse);
+  public List<ShipmentResponse.Detail> toShipmentDetailList(Result<Record> records) {
+    return records.map(this::toShipmentDetail);
   }
 
-  protected ShipmentResponse toShipmentResponse(Record record) {
-    return new ShipmentResponse(
+  protected ShipmentResponse.Detail toShipmentDetail(Record record) {
+    return new ShipmentResponse.Detail(
         record.get(P_SHIPMENT.ID),
         record.get(P_SHIPMENT.SEQUENCE),
         ShipmentStatus.valueOf(record.get(P_SHIPMENT.STATUS)),
@@ -105,7 +101,7 @@ public class DeliveryRecordMapper {
         fromNodeOf(record),
         toNodeOf(record),
         record.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
-            ? new DeliveryManagerResponse(
+            ? new DeliveryResponse.ManagerInfo(
                 record.get(P_SHIPMENT.DELIVERY_MANAGER_ID),
                 record.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
             : null,
@@ -131,15 +127,15 @@ public class DeliveryRecordMapper {
     return DeliveryStatus.READY;
   }
 
-  private NodeResponse fromNodeOf(Record record) {
-    return new NodeResponse(
+  private DeliveryResponse.NodeInfo fromNodeOf(Record record) {
+    return new DeliveryResponse.NodeInfo(
         record.get(P_SHIPMENT.FROM_NODE_ID),
         NodeType.valueOf(record.get(P_SHIPMENT.FROM_NODE_TYPE)),
         record.get(P_SHIPMENT.FROM_NODE_NAME));
   }
 
-  private NodeResponse toNodeOf(Record record) {
-    return new NodeResponse(
+  private DeliveryResponse.NodeInfo toNodeOf(Record record) {
+    return new DeliveryResponse.NodeInfo(
         record.get(P_SHIPMENT.TO_NODE_ID),
         NodeType.valueOf(record.get(P_SHIPMENT.TO_NODE_TYPE)),
         record.get(P_SHIPMENT.TO_NODE_NAME));

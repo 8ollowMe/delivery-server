@@ -3,13 +3,14 @@ package com.followMe.delivery_server.delivery.application;
 import static com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker.checkReadAccess;
 import static com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker.checkShipmentStatusUpdateAccess;
 
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +25,20 @@ public class ShipmentServiceImpl {
   private final DeliveryQueryPort deliveryQueryPort;
 
   @Transactional(readOnly = true)
-  public List<DeliveryResponseDto.ShipmentResponse> getShipmentsByDeliveryId(
+  public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(
       UserContext user, UUID deliveryId) {
     deliveryRepository
         .findById(deliveryId)
-        .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
-    List<DeliveryResponseDto.ShipmentResponse> shipmentDtoList =
-        deliveryQueryRepository.findShipmentsByDeliveryId(deliveryId);
+        .orElseThrow(DeliveryNotFoundException::new);
+    List<ShipmentResponse.Detail> shipmentDtoList =
+            deliveryQueryPort.findShipmentsByDeliveryId(deliveryId);
     checkReadAccess(user, shipmentDtoList);
     return shipmentDtoList;
   }
 
   @Transactional(readOnly = true)
-  public DeliveryResponseDto.ShipmentResponse getShipment(UserContext user, UUID shipmentId) {
-    DeliveryResponseDto.ShipmentResponse shipment = deliveryQueryPort.findShipmentById(shipmentId);
+  public ShipmentResponse.Detail getShipment(UserContext user, UUID shipmentId) {
+    ShipmentResponse.Detail shipment = deliveryQueryPort.findShipmentById(shipmentId);
     checkReadAccess(user, List.of(shipment));
     return shipment;
   }

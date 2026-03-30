@@ -2,11 +2,11 @@ package com.followMe.delivery_server.delivery.domain.service;
 
 import com.followMe.common.exception.BusinessException;
 import com.followMe.common.exception.CommonErrorCode;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
+import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,8 +14,7 @@ import java.util.UUID;
 
 public class DeliveryPermissionChecker {
 
-  public static void checkReadAccess(
-      UserContext user, List<DeliveryResponseDto.ShipmentResponse> shipments) {
+  public static void checkReadAccess(UserContext user, List<ShipmentResponse.Detail> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
     for (var shipment : shipments) {

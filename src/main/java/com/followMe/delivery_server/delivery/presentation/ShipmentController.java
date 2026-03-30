@@ -31,7 +31,7 @@ public class ShipmentController {
   @GetMapping("/{shipmentId}")
   public ResponseEntity<ApiResponse> getShipment(
       @PathVariable UUID shipmentId, @ModelAttribute UserContext user) {
-    DeliveryResponseDto.ShipmentResponse response = shipmentService.getShipment(user, shipmentId);
+    ShipmentResponse.Detail response = shipmentService.getShipment(user, shipmentId);
     return ApiResponse.ok(response);
   }
 
@@ -39,8 +39,8 @@ public class ShipmentController {
   public ResponseEntity<ApiResponse> updateStatus(
       @PathVariable UUID shipmentId,
       @ModelAttribute UserContext user,
-      @RequestBody @Valid ShipmentStatusUpdateRequest statusRequest) {
-    shipmentService.updateStatus(user, shipmentId, statusRequest.status());
+      @RequestBody  @Valid  ShipmentRequest.UpdateStatus request) {
+    shipmentService.updateStatus(user, shipmentId, request.status());
     return ApiResponse.ok();
   }
 }

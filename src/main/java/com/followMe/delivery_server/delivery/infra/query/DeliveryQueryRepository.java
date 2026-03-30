@@ -5,12 +5,12 @@ import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
 import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
+import com.followMe.delivery_server.delivery.presentation.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,8 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
   private final DeliveryConditionBuilder conditionBuilder;
   private final DeliveryRecordMapper recordMapper;
 
-  public DeliveryResponseDto findDeliveryById(UUID deliveryId) {
+  @Override
+  public DeliveryResponse.Detail findDeliveryById(UUID deliveryId) {
     Result<Record> records =
         dsl.select()
             .from(P_DELIVERY)
@@ -37,10 +38,11 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
             .fetch();
 
     if (records.isEmpty()) throw new DeliveryNotFoundException();
-    return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
+    return recordMapper.toDetail(records.getFirst(), records.stream());
   }
 
-  public PageResponse<DeliveryListItemDto> findDeliveries(
+  @Override
+  public PageResponse<DeliveryResponse.ListItem> findDeliveries(
       PageRequest pageRequest, DeliverySearchCondition condition) {
 
     SortField<?> sortField = conditionBuilder.buildSortField(condition);
@@ -68,15 +70,16 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
             .orderBy(sortField, P_SHIPMENT.SEQUENCE.asc())
             .fetch();
 
-    List<DeliveryListItemDto> content =
+    List<DeliveryResponse.ListItem> content =
         records.intoGroups(P_DELIVERY.ID).values().stream()
-            .map(group -> recordMapper.toListItemDto(group.getFirst(), group))
+            .map(group -> recordMapper.toListItem(group.getFirst(), group))
             .toList();
 
     return PageResponse.of(content, pageRequest.getPage(), pageRequest.getSize(), total);
   }
 
-  public DeliveryResponseDto findDeliveryByOrderId(UUID orderId) {
+  @Override
+  public DeliveryResponse.Detail findDeliveryByOrderId(UUID orderId) {
     Result<Record> records =
         dsl.select()
             .from(P_DELIVERY)
@@ -87,10 +90,11 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
             .fetch();
 
     if (records.isEmpty()) throw new DeliveryNotFoundException();
-    return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
+    return recordMapper.toDetail(records.getFirst(), records.stream());
   }
 
-  public List<DeliveryResponseDto.ShipmentResponse> findShipmentsByDeliveryId(UUID deliveryId) {
+  @Override
+  public List<ShipmentResponse.Detail> findShipmentsByDeliveryId(UUID deliveryId) {
     Result<Record> records =
         dsl.select()
             .from(P_SHIPMENT)
@@ -98,12 +102,13 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
             .orderBy(P_SHIPMENT.SEQUENCE.asc())
             .fetch();
     if (records.isEmpty()) throw new ShipmentNotFoundException();
-    return recordMapper.toShipmentResponseList(records);
+    return recordMapper.toShipmentDetailList(records);
   }
 
-  public DeliveryResponseDto.ShipmentResponse findShipmentById(UUID shipmentId) {
+  @Override
+  public ShipmentResponse.Detail findShipmentById(UUID shipmentId) {
     Record record = dsl.select().from(P_SHIPMENT).where(P_SHIPMENT.ID.eq(shipmentId)).fetchOne();
     if (record == null) throw new ShipmentNotFoundException();
-    return recordMapper.toShipmentResponse(record);
+    return recordMapper.toShipmentDetail(record);
   }
 }
