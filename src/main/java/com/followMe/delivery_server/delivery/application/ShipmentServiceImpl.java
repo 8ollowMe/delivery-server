@@ -1,15 +1,15 @@
 package com.followMe.delivery_server.delivery.application;
 
-import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkReadAccess;
-import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkShipmentStatusUpdateAccess;
+import static com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker.checkReadAccess;
+import static com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker.checkShipmentStatusUpdateAccess;
 
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
-import com.followMe.delivery_server.delivery.infra.query.DeliveryQueryRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ShipmentServiceImpl implements ShipmentService {
+public class ShipmentServiceImpl {
 
   private final DeliveryRepository deliveryRepository;
-  private final DeliveryQueryRepository deliveryQueryRepository;
+  private final DeliveryQueryPort deliveryQueryPort;
 
-  @Override
   @Transactional(readOnly = true)
   public List<DeliveryResponseDto.ShipmentResponse> getShipmentsByDeliveryId(
       UserContext user, UUID deliveryId) {
@@ -36,16 +35,13 @@ public class ShipmentServiceImpl implements ShipmentService {
     return shipmentDtoList;
   }
 
-  @Override
   @Transactional(readOnly = true)
   public DeliveryResponseDto.ShipmentResponse getShipment(UserContext user, UUID shipmentId) {
-    DeliveryResponseDto.ShipmentResponse shipmentResponse =
-        deliveryQueryRepository.findShipmentById(shipmentId);
-    checkReadAccess(user, List.of(shipmentResponse));
-    return shipmentResponse;
+    DeliveryResponseDto.ShipmentResponse shipment = deliveryQueryPort.findShipmentById(shipmentId);
+    checkReadAccess(user, List.of(shipment));
+    return shipment;
   }
 
-  @Override
   @Transactional
   public void updateStatus(UserContext user, UUID shipmentId, ShipmentStatus status) {
     Shipment shipment =

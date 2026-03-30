@@ -3,8 +3,8 @@ package com.followMe.delivery_server.delivery.presentation;
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
-import com.followMe.delivery_server.delivery.application.DeliveryService;
-import com.followMe.delivery_server.delivery.application.ShipmentService;
+import com.followMe.delivery_server.delivery.application.DeliveryServiceImpl;
+import com.followMe.delivery_server.delivery.application.ShipmentServiceImpl;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DeliveryController {
 
-  private final DeliveryService deliveryService;
-  private final ShipmentService shipmentService;
+  private final DeliveryServiceImpl deliveryService;
+  private final ShipmentServiceImpl shipmentService;
 
   @ModelAttribute
   public UserContext userContext(

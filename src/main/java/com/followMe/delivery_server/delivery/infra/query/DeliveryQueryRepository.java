@@ -10,6 +10,7 @@ import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

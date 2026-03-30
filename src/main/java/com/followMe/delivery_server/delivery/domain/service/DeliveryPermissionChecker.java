@@ -14,7 +14,8 @@ import java.util.UUID;
 
 public class DeliveryPermissionChecker {
 
-  public static void checkReadAccess(UserContext user, List<DeliveryResponseDto.ShipmentResponse> shipments) {
+  public static void checkReadAccess(
+      UserContext user, List<DeliveryResponseDto.ShipmentResponse> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
     for (var shipment : shipments) {

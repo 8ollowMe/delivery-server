@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.presentation;
 
 import com.followMe.common.response.ApiResponse;
-import com.followMe.delivery_server.delivery.application.ShipmentService;
+import com.followMe.delivery_server.delivery.application.ShipmentServiceImpl;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentStatusUpdateRequest;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ShipmentController {
 
-  private final ShipmentService shipmentService;
+  private final ShipmentServiceImpl shipmentService;
 
   @ModelAttribute
   public UserContext userContext(

@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.presentation;
 
 import com.followMe.common.response.ApiResponse;
-import com.followMe.delivery_server.delivery.application.DeliveryService;
+import com.followMe.delivery_server.delivery.application.DeliveryServiceImpl;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
 import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/internal/v1/deliveries")
 @RequiredArgsConstructor
 public class DeliveryInternalController {
-  private final DeliveryService deliveryService;
+  private final DeliveryServiceImpl deliveryService;
 
   @PostMapping
   public ResponseEntity<ApiResponse> createDelivery(@RequestBody OrderCreateCommand command) {
