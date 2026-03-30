@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.hub;
 
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubNodeInfo;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
 import java.util.List;

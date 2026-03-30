@@ -1,14 +1,15 @@
 package com.followMe.delivery_server.delivery.application;
 
-import static com.followMe.delivery_server.delivery.application.UserRole.*;
-
 import com.followMe.common.exception.BusinessException;
 import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class DeliveryPermissionChecker {
 
@@ -73,8 +74,6 @@ public class DeliveryPermissionChecker {
     }
   }
 
-  private record ShipmentInfoIds(Set<UUID> nodeIds, Set<UUID> managerIds) {}
-
   private static ShipmentInfoIds getShipmentInfoIdsFromEntity(List<Shipment> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
@@ -126,4 +125,6 @@ public class DeliveryPermissionChecker {
       throw new BusinessException(CommonErrorCode.FORBIDDEN);
     }
   }
+
+  private record ShipmentInfoIds(Set<UUID> nodeIds, Set<UUID> managerIds) {}
 }

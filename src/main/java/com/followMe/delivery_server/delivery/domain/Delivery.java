@@ -3,7 +3,7 @@ package com.followMe.delivery_server.delivery.domain;
 import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidDeliveryStatusException;
+import com.followMe.delivery_server.delivery.domain.exception.InvalidDeliveryStatusException;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

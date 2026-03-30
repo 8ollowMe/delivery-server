@@ -7,7 +7,7 @@ import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.*;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.infra.hub.HubClient;
 import com.followMe.delivery_server.delivery.infra.query.DeliveryQueryRepository;
@@ -65,9 +65,7 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Transactional
   public void cancelDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
-        deliveryRepository
-            .findById(deliveryId)
-            .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
+        deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
     checkCancelAccess(user, delivery);
     delivery.cancel();
   }
@@ -76,9 +74,7 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Transactional
   public void deleteDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
-        deliveryRepository
-            .findById(deliveryId)
-            .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
+        deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
     checkDeleteAccess(user, delivery);
     delivery.softDelete(user.userId());
   }
