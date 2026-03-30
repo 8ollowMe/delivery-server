@@ -19,7 +19,7 @@ public class HubClientFallbackFactory implements FallbackFactory<HubClient> {
       @Override
       public HubRouteResponse getNodes(UUID sourceHubId, UUID vendorId) {
         log.error(
-            "Failed to get hub route for sourceHubId: {}, vendorId: {}. Cause: {}",
+            "Failed to get hub route for hubId: {}, vendorId: {}. Cause: {}",
             sourceHubId,
             vendorId,
             cause.getMessage());

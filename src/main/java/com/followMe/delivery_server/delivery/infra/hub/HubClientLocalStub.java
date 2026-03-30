@@ -22,7 +22,7 @@ public class HubClientLocalStub implements HubClient {
 
   @Override
   public HubRouteResponse getNodes(UUID sourceHubId, UUID vendorId) {
-    log.info("[LocalStub] HubClient.getNodes sourceHubId={} vendorId={}", sourceHubId, vendorId);
+    log.info("[LocalStub] HubClient.getNodes hubId={} vendorId={}", sourceHubId, vendorId);
     if (sourceHubId.toString().endsWith(UNKNOWN_SUFFIX)
         || vendorId.toString().endsWith(UNKNOWN_SUFFIX)) {
       throw new HubClientUnavailableException();

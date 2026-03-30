@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class DeliveryQueryRepository {
+public class DeliveryQueryRepository implements DeliveryQueryPort {
 
   private final DSLContext dsl;
   private final DeliveryConditionBuilder conditionBuilder;
