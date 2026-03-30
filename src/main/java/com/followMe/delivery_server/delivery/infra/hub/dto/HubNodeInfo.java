@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.client.dto;
+package com.followMe.delivery_server.delivery.infra.hub.dto;
 
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import java.util.UUID;

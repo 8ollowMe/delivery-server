@@ -1,6 +1,6 @@
-package com.followMe.delivery_server.client;
+package com.followMe.delivery_server.delivery.infra.hub;
 
-import com.followMe.delivery_server.client.dto.HubRouteResponse;
+import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

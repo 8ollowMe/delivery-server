@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.12'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.diffplug.spotless' version '6.25.0'
+	id 'nu.studer.jooq' version '9.0'
 }
 
 group = 'com.followMe'
@@ -61,10 +62,50 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
 	implementation 'com.followMe:common-lib:1.0.1'
+
+	jooqGenerator 'org.postgresql:postgresql'
+	jooqGenerator 'org.jooq:jooq:3.19.30'
+	jooqGenerator 'org.jooq:jooq-meta:3.19.30'
+	jooqGenerator 'org.jooq:jooq-codegen:3.19.30'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs 'src/generated/jooq'
+		}
+	}
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jooq {
+	configurations {
+		main {
+			generationTool {
+				jdbc {
+					driver = 'org.postgresql.Driver'
+					url = 'jdbc:postgresql://localhost:5432/delivery_db'
+					user = 'postgres'
+					password = 'password'
+				}
+				generator {
+					name = 'org.jooq.codegen.DefaultGenerator'
+					database {
+						name = 'org.jooq.meta.postgres.PostgresDatabase'
+						inputSchema = 'public'
+						includes = 'p_delivery|p_shipment'
+					}
+					target {
+						packageName = 'com.followMe.delivery_server.jooq'
+						directory = 'src/generated/jooq'
+					}
+				}
+			}
+		}
+	}
 }
 
 spotless {

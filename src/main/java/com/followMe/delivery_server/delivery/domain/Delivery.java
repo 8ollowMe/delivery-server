@@ -2,7 +2,7 @@ package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
-import com.followMe.delivery_server.delivery.exception.DeliveryException.InvalidDeliveryStatusException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidDeliveryStatusException;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,9 @@ public class Delivery extends BaseAudit {
   @Column(columnDefinition = "uuid")
   private UUID id;
 
-  @Embedded private OrderId orderId;
+  @Embedded
+  @AttributeOverrides({@AttributeOverride(name = "value", column = @Column(name = "order_id"))})
+  private OrderId orderId;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)

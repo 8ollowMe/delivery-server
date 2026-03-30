@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.repository;
+package com.followMe.delivery_server.delivery.domain.repository;
 
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import java.util.UUID;

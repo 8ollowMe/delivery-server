@@ -11,8 +11,6 @@ public enum ShipmentStatus {
   FAILED,
   CANCELLED;
 
-  private Set<ShipmentStatus> allowedTransitions;
-
   static {
     PENDING.allowedTransitions = Set.of(SHIPPED, CANCELLED);
     SHIPPED.allowedTransitions = Set.of(IN_TRANSIT, FAILED);
@@ -22,6 +20,8 @@ public enum ShipmentStatus {
     FAILED.allowedTransitions = Set.of();
     CANCELLED.allowedTransitions = Set.of();
   }
+
+  private Set<ShipmentStatus> allowedTransitions;
 
   public boolean canTransitionTo(ShipmentStatus next) {
     return allowedTransitions.contains(next);

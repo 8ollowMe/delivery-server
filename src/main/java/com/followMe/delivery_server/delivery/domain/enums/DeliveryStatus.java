@@ -9,8 +9,6 @@ public enum DeliveryStatus {
   FAILED,
   CANCELLED;
 
-  private Set<DeliveryStatus> allowedTransitions;
-
   static {
     READY.allowedTransitions = Set.of(IN_PROGRESS, CANCELLED);
     IN_PROGRESS.allowedTransitions = Set.of(COMPLETED, FAILED);
@@ -18,6 +16,8 @@ public enum DeliveryStatus {
     FAILED.allowedTransitions = Set.of();
     CANCELLED.allowedTransitions = Set.of();
   }
+
+  private Set<DeliveryStatus> allowedTransitions;
 
   public boolean isTransitionNotAllowed(DeliveryStatus next) {
     return !allowedTransitions.contains(next);

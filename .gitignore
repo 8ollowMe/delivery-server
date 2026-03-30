@@ -28,3 +28,6 @@ logs/
 # Test output
 test-results/
 gradle.properties
+
+# Generated sources
+src/generated/
