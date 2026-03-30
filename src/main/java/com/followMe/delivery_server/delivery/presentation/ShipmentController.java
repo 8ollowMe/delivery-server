@@ -2,11 +2,11 @@ package com.followMe.delivery_server.delivery.presentation;
 
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.ShipmentService;
-import com.followMe.delivery_server.delivery.application.UserContext;
-import com.followMe.delivery_server.delivery.application.UserRole;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentStatusUpdateRequest;
 import jakarta.validation.Valid;
+import com.followMe.delivery_server.delivery.domain.UserContext;
+import com.followMe.delivery_server.delivery.domain.UserRole;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
