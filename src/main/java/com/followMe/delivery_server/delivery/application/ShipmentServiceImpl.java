@@ -5,6 +5,7 @@ import static com.followMe.delivery_server.delivery.application.DeliveryPermissi
 
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.domain.Shipment;
+import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;

@@ -1,6 +1,7 @@
 package com.followMe.delivery_server.delivery.application;
 
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
+import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import java.util.List;
 import java.util.UUID;

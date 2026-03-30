@@ -3,6 +3,8 @@ package com.followMe.delivery_server.delivery.application;
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.*;
+import com.followMe.delivery_server.delivery.domain.UserContext;
+
 import java.util.UUID;
 
 public interface DeliveryService {
