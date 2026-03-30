@@ -17,8 +17,10 @@ public enum DeliveryErrorCode implements ErrorCode {
   INVALID_SHIPMENT_TYPE("D008", "배송 타입이 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
   INVALID_NODE_INFORMATION("D009", "노드 정보가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
 
-  HUB_CLIENT_UNAVAILABLE("H001", "Hub 서비스를 일시적으로 사용할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE),
-  HUB_ROUTE_NOT_FOUND("H002", "Hub 경로 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  DELIVERY_MANAGER_ASSIGN_FAILED("D010", "배달 관리자 할당에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+  HUB_CLIENT_UNAVAILABLE("HC001", "Hub 서비스를 일시적으로 사용할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE),
+  HUB_ROUTE_NOT_FOUND("HC002", "Hub 경로 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   ;
 
   private final String code;
