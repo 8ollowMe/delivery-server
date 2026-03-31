@@ -398,3 +398,169 @@ X-User-Role: MASTER
         client.assert(response.body.error.code === "D004", "에러코드 D004 기대");
     });
 %}
+
+### ===== Internal API =====
+
+### 담당자 배정 (internal)
+GET http://localhost:8081/internal/v1/shipments/cccccccc-0000-0000-0000-000000000001/assigned-manager
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("담당자 배정 (internal)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [실패 예상] 담당자 배정 - 존재하지 않는 구간 (internal)
+GET http://localhost:8081/internal/v1/shipments/cccccccc-0000-0000-0000-000000000099/assigned-manager
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 담당자 배정 - 존재하지 않는 구간", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D004", "에러코드 D004 기대");
+    });
+%}
+
+### [Setup] 담당자 재배정 (internal) 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 담당자 재배정 (internal) - PENDING 구간 (cccc-01)
+PATCH http://localhost:8081/internal/v1/shipments/cccccccc-0000-0000-0000-000000000001/reassign
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("담당자 재배정 (internal) - PENDING 구간", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [실패 예상] 담당자 재배정 - 진행 중인 구간 (internal, cccc-05: IN_TRANSIT)
+PATCH http://localhost:8081/internal/v1/shipments/cccccccc-0000-0000-0000-000000000005/reassign
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 담당자 재배정 - 진행 중인 구간", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 담당자 재배정 - 존재하지 않는 구간 (internal)
+PATCH http://localhost:8081/internal/v1/shipments/cccccccc-0000-0000-0000-000000000099/reassign
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 담당자 재배정 - 존재하지 않는 구간", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D004", "에러코드 D004 기대");
+    });
+%}
+
+### ===== 담당자 재배정 =====
+
+### [Setup] 재배정 테스트 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 재배정 전 담당자 저장 (cccc-01)
+GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.global.set("beforeManagerId", response.body.data.deliveryManager?.id ?? null);
+    client.test("재배정 전 담당자 저장", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+    });
+%}
+
+### 재배정 (마스터 - PENDING 구간, cccc-01)
+PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/reassign
+Content-Type: application/json
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+{"deliverManagerId": "eeeeeeee-0000-0000-0000-000000000002"}
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("재배정 (마스터 - PENDING 구간)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### 재배정 후 담당자 변경 확인 (cccc-01)
+GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    var afterManagerId = response.body.data.deliveryManager?.id ?? null;
+    client.test("재배정 후 담당자 변경 확인", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(afterManagerId !== null, "담당자 존재 기대");
+        client.assert(afterManagerId !== client.global.get("beforeManagerId"), "담당자 변경 기대 (before: " + client.global.get("beforeManagerId") + ", after: " + afterManagerId + ")");
+    });
+%}
+
+### [실패 예상] 재배정 - 마스터가 아닌 경우
+PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/reassign
+Content-Type: application/json
+X-User-Id: eeeeeeee-0000-0000-0000-000000000001
+X-User-Role: DELIVERY_MANAGER
+
+{"deliverManagerId": "eeeeeeee-0000-0000-0000-000000000002"}
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 재배정 - 권한 없음 (배송 담당자)", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 재배정 - PENDING/FAILED 아닌 구간 (cccc-05: IN_TRANSIT)
+PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005/reassign
+Content-Type: application/json
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+{"deliverManagerId": "eeeeeeee-0000-0000-0000-000000000001"}
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 재배정 - 진행 중인 구간 불가", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 재배정 - 존재하지 않는 구간
+PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000099/reassign
+Content-Type: application/json
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+{"deliverManagerId": "eeeeeeee-0000-0000-0000-000000000001"}
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 재배정 - 존재하지 않는 구간", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D004", "에러코드 D004 기대");
+    });
+%}

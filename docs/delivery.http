@@ -206,6 +206,63 @@ X-User-Role: MASTER
     });
 %}
 
+### ===== Internal API =====
+
+### 배송 상태 조회 (internal)
+GET http://localhost:8081/internal/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/status
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("배송 상태 조회 (internal)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+        client.assert(response.body.data.deliveryStatus !== null, "deliveryStatus 존재 기대");
+        client.assert(response.body.data.shipments.length > 0, "shipments 1개 이상 기대");
+    });
+%}
+
+### [실패 예상] 배송 상태 조회 - 존재하지 않는 배송 (internal)
+GET http://localhost:8081/internal/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099/status
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 배송 상태 조회 - 존재하지 않는 배송", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
+%}
+
+### [Setup] 배송 취소 (internal) 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 배송 취소 (internal)
+PATCH http://localhost:8081/internal/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("배송 취소 (internal)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [실패 예상] 배송 취소 - 존재하지 않는 배송 (internal)
+PATCH http://localhost:8081/internal/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099/cancel
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 배송 취소 - 존재하지 않는 배송", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
+%}
+
 ### ===== 배송 생성 =====
 
 ### [Setup] 배송 생성 전 초기화
