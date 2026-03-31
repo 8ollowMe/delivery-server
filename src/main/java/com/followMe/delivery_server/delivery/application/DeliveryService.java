@@ -77,6 +77,13 @@ public class DeliveryService {
   }
 
   @Transactional
+  public void cancelDeliveryForInternal(UUID deliveryId) {
+    Delivery delivery =
+        deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
+    delivery.cancelBySystem();
+  }
+
+  @Transactional
   public void deleteDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);

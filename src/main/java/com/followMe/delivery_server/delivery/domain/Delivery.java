@@ -102,4 +102,12 @@ public class Delivery extends BaseAudit {
     super.softDelete(user.userId());
     this.shipments.forEach(shipment -> shipment.softDelete(user.userId()));
   }
+
+  public void cancelBySystem() {
+    DeliveryStatus currentStatus = this.getDeliveryStatus();
+    if (currentStatus != DeliveryStatus.READY && currentStatus != DeliveryStatus.FAILED) {
+      throw new InvalidDeliveryStatusException();
+    }
+    this.shipments.forEach(Shipment::cancel);
+  }
 }

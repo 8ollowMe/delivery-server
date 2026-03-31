@@ -17,6 +17,12 @@ import java.util.UUID;
 public class DeliveryInternalController {
   private final DeliveryService deliveryService;
 
+  @PatchMapping("/{deliveryId}/cancel")
+  public ResponseEntity<ApiResponse> cancelDelivery(@PathVariable UUID deliveryId) {
+    deliveryService.cancelDeliveryForInternal(deliveryId);
+    return ApiResponse.ok();
+  }
+
   @PostMapping
   public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create command) {
     DeliveryResponse.DeliveryCreate response = deliveryService.createDelivery(command);
