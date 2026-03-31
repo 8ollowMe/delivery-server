@@ -4,6 +4,7 @@ import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.StatusResponse;
 import com.followMe.delivery_server.delivery.domain.*;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
@@ -80,5 +81,14 @@ public class DeliveryService {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
     delivery.softDelete(user, permissionChecker);
+  }
+
+  @Transactional(readOnly = true)
+  public StatusResponse getDeliveryStatusForInternal(UUID deliveryId) {
+    Delivery delivery =
+        deliveryRepository
+            .findByIdFetchShipments(deliveryId)
+            .orElseThrow(DeliveryNotFoundException::new);
+    return StatusResponse.from(delivery);
   }
 }

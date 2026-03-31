@@ -4,12 +4,12 @@ import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.StatusResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/internal/v1/deliveries")
@@ -20,6 +20,11 @@ public class DeliveryInternalController {
   @PostMapping
   public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create command) {
     DeliveryResponse.DeliveryCreate response = deliveryService.createDelivery(command);
+    return ApiResponse.ok(response);
+}
+  @GetMapping("/{deliveryId}/status")
+  public ResponseEntity<ApiResponse> getDelivery(@PathVariable UUID deliveryId) {
+    StatusResponse response = deliveryService.getDeliveryStatusForInternal(deliveryId);
     return ApiResponse.ok(response);
   }
 }
