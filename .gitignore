@@ -31,3 +31,5 @@ gradle.properties
 
 # Generated sources
 src/generated/
+# IntelliJ HTTP Client responses
+.idea/httpRequests/

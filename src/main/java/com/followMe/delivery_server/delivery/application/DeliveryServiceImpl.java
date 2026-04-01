@@ -1,5 +1,8 @@
 package com.followMe.delivery_server.delivery.application;
 
+import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkAccess;
+import static com.followMe.delivery_server.delivery.application.DeliveryPermissionChecker.checkListAccess;
+
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
@@ -9,8 +12,8 @@ import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
-import com.followMe.delivery_server.delivery.infra.DeliveryQueryRepository;
 import com.followMe.delivery_server.delivery.infra.hub.HubClient;
+import com.followMe.delivery_server.delivery.infra.query.DeliveryQueryRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +40,26 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   @Transactional(readOnly = true)
-  public DeliveryResponseDto getDelivery(UUID deliveryId) {
-    return deliveryQueryRepository.findDeliveryById(deliveryId);
+  public DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId) {
+    DeliveryResponseDto deliveryResponseDto = deliveryQueryRepository.findDeliveryById(deliveryId);
+    checkAccess(user, deliveryResponseDto);
+    return deliveryResponseDto;
   }
 
   @Override
   @Transactional(readOnly = true)
-  public PageResponse<DeliveryResponseDto> getDeliveries(
-      PageRequest pageRequest, DeliverySearchCondition condition) {
+  public PageResponse<DeliveryListItemDto> getDeliveries(
+      UserContext user, PageRequest pageRequest, DeliverySearchCondition condition) {
+
+    checkListAccess(user, condition);
     return deliveryQueryRepository.findDeliveries(pageRequest, condition);
+  }
+
+  @Override
+  public DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId) {
+    DeliveryResponseDto deliveryResponseDto =
+        deliveryQueryRepository.findDeliveryByOrderId(orderId);
+    checkAccess(user, deliveryResponseDto);
+    return deliveryResponseDto;
   }
 }

@@ -23,6 +23,10 @@ public enum ShipmentStatus {
 
   private Set<ShipmentStatus> allowedTransitions;
 
+  public static boolean isInProgress(ShipmentStatus status) {
+    return status.equals(SHIPPED) || status.equals(IN_TRANSIT) || status.equals(ARRIVED);
+  }
+
   public boolean canTransitionTo(ShipmentStatus next) {
     return allowedTransitions.contains(next);
   }
