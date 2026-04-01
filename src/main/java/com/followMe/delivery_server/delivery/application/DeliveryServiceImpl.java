@@ -4,10 +4,7 @@ import static com.followMe.delivery_server.delivery.application.DeliveryPermissi
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
-import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
+import com.followMe.delivery_server.delivery.application.dto.*;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Node;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException;
@@ -30,7 +27,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   @Transactional
-  public void createDelivery(OrderCreateCommand command) {
+  public DeliveryCreateResponse createDelivery(OrderCreateCommand command) {
 
     List<Node> nodes = hubClient.getNodes(command.sourceHubId(), command.vendorId()).toDomain();
     Delivery delivery = Delivery.create(command.orderId(), nodes);
