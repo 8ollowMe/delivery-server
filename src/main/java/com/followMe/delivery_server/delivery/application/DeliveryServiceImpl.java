@@ -12,6 +12,7 @@ import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.presentation.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.presentation.dto.DeliveryResponse;
@@ -28,6 +29,7 @@ public class DeliveryServiceImpl {
   private final DeliveryRepository deliveryRepository;
   private final DeliveryQueryPort deliveryQueryPort;
   private final HubRouteInfo hubRouteInfo;
+  private final DeliveryPermissionChecker permissionChecker;
 
   @Transactional
   public DeliveryCreateResponse createDelivery(DeliveryRequest.Create command) {
@@ -40,21 +42,21 @@ public class DeliveryServiceImpl {
   @Transactional(readOnly = true)
   public DeliveryResponse.Detail getDelivery(UserContext user, UUID deliveryId) {
     DeliveryResponse.Detail detail = deliveryQueryPort.findDeliveryById(deliveryId);
-    checkReadAccess(user, detail.shipments());
+    permissionChecker.checkReadAccess(user, detail.shipments());
     return detail;
   }
 
   @Transactional(readOnly = true)
   public PageResponse<DeliveryResponse.ListItem> getDeliveries(
       UserContext user, PageRequest pageRequest, DeliverySearchCondition condition) {
-    checkListAccess(user, condition);
+    permissionChecker.checkListAccess(user, condition);
     return deliveryQueryPort.findDeliveries(pageRequest, condition);
   }
 
   @Transactional(readOnly = true)
   public DeliveryResponse.Detail getDeliveryByOrderId(UserContext user, UUID orderId) {
     DeliveryResponse.Detail detail = deliveryQueryPort.findDeliveryByOrderId(orderId);
-    checkReadAccess(user, detail.shipments());
+    permissionChecker.checkReadAccess(user, detail.shipments());
     return detail;
   }
 
@@ -62,15 +64,13 @@ public class DeliveryServiceImpl {
   public void cancelDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    checkCancelAccess(user, delivery);
-    delivery.cancel();
+    delivery.cancel(user, permissionChecker);
   }
 
   @Transactional
   public void deleteDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    checkDeleteAccess(user, delivery);
-    delivery.softDelete(user.userId());
+    delivery.softDelete(user,permissionChecker);
   }
 }

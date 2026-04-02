@@ -10,6 +10,7 @@ import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundEx
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class ShipmentServiceImpl {
 
   private final DeliveryRepository deliveryRepository;
   private final DeliveryQueryPort deliveryQueryPort;
+  private final DeliveryPermissionChecker permissionChecker;
 
   @Transactional(readOnly = true)
   public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(
@@ -32,14 +34,14 @@ public class ShipmentServiceImpl {
         .orElseThrow(DeliveryNotFoundException::new);
     List<ShipmentResponse.Detail> shipmentDtoList =
             deliveryQueryPort.findShipmentsByDeliveryId(deliveryId);
-    checkReadAccess(user, shipmentDtoList);
+    permissionChecker.checkReadAccess(user, shipmentDtoList);
     return shipmentDtoList;
   }
 
   @Transactional(readOnly = true)
   public ShipmentResponse.Detail getShipment(UserContext user, UUID shipmentId) {
     ShipmentResponse.Detail shipment = deliveryQueryPort.findShipmentById(shipmentId);
-    checkReadAccess(user, List.of(shipment));
+    permissionChecker.checkReadAccess(user, List.of(shipment));
     return shipment;
   }
 
@@ -47,7 +49,6 @@ public class ShipmentServiceImpl {
   public void updateStatus(UserContext user, UUID shipmentId, ShipmentStatus status) {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
-    checkShipmentStatusUpdateAccess(user, shipment);
-    shipment.updateShipmentStatus(status);
+    shipment.updateShipmentStatus(status,user,permissionChecker);
   }
 }
