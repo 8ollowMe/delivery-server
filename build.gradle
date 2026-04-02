@@ -61,7 +61,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
-	implementation 'com.followMe:common-lib:1.0.2'
+	implementation 'com.followMe:common-lib:1.0.6'
+	implementation 'org.springframework.kafka:spring-kafka'
 
 	jooqGenerator 'org.postgresql:postgresql'
 	jooqGenerator 'org.jooq:jooq:3.19.30'

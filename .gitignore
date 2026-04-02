@@ -33,3 +33,4 @@ gradle.properties
 src/generated/
 # IntelliJ HTTP Client responses
 .idea/httpRequests/
+src/main/resources/kafka.truststore.jks

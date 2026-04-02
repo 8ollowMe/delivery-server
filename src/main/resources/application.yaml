@@ -1,6 +1,20 @@
 spring:
   application:
     name: delivery-server
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: delivery-server
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 
 
   config:
@@ -68,11 +82,26 @@ spring:
     activate:
       on-profile: local
 
+  kafka:
+    properties:
+      security.protocol: SSL
+      ssl.truststore.location: classpath:kafka.truststore.jks
+      ssl.truststore.password: ${KAFKA_TRUSTSTORE_PASSWORD}
+      ssl.endpoint.identification.algorithm: ""
+
 ---
 spring:
   config:
     activate:
       on-profile: prod
+
+  kafka:
+    bootstrap-servers: 172.31.10.105:9092,172.31.1.110:9092,172.31.15.248:9092
+    properties:
+      security.protocol: SSL
+      ssl.truststore.location: /etc/kafka/ssl/kafka.server.truststore.jks
+      ssl.truststore.password: ${KAFKA_TRUSTSTORE_PASSWORD}
+      ssl.endpoint.identification.algorithm: ""
 
 eureka:
   client:
