@@ -1,6 +1,7 @@
 package com.followMe.delivery_server.delivery.presentation;
 
 import com.followMe.common.response.ApiResponse;
+import com.followMe.delivery_server.delivery.application.ShipmentService;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentRequest;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.UserContext;
