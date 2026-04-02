@@ -4,6 +4,7 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
+import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.*;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
@@ -132,10 +133,6 @@ public class Shipment extends BaseAudit {
     }
   }
 
-  public void assignDeliveryManager(DeliveryManager deliveryManager) {
-    this.deliveryManager = deliveryManager;
-  }
-
   public void reassignDeliveryManager(
       UserContext user,
       DeliveryManager deliveryManager,
@@ -148,7 +145,7 @@ public class Shipment extends BaseAudit {
     }
   }
 
-  public void reassignDeliveryManagerForSystem(DeliveryManager deliveryManager) {
+  public void assignDeliveryManager(DeliveryManager deliveryManager, DeliveryEvents events) {
     if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
       setDeliveryManager(deliveryManager, events);
     } else {
@@ -196,7 +193,6 @@ public class Shipment extends BaseAudit {
     transitionTo(ShipmentStatus.COMPLETED);
     this.completedAt = Instant.now();
     if (type == ShipmentType.HUB_TO_VENDOR) {
-      delivery.complete();
       events.deliveryCompleted(delivery);
     } else events.shipmentCompleted(this);
   }
@@ -210,7 +206,10 @@ public class Shipment extends BaseAudit {
   }
 
   public void updateShipmentStatus(
-      ShipmentStatus status, UserContext user, DeliveryPermissionChecker permissionChecker) {
+      ShipmentStatus status,
+      UserContext user,
+      DeliveryPermissionChecker permissionChecker,
+      DeliveryEvents events) {
 
     permissionChecker.checkShipmentStatusUpdateAccess(user, this);
     switch (status) {
@@ -218,7 +217,7 @@ public class Shipment extends BaseAudit {
 
       case IN_TRANSIT -> this.transit();
       case ARRIVED -> this.arrive();
-      case COMPLETED -> this.complete();
+      case COMPLETED -> this.complete(events);
       case FAILED -> this.fail();
       default -> throw new InvalidShipmentStatusException();
     }

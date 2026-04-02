@@ -1,5 +1,6 @@
 package com.followMe.delivery_server.delivery.application;
 
+import com.followMe.common.event.Events;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentRequest;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.Delivery;
@@ -7,6 +8,7 @@ import com.followMe.delivery_server.delivery.domain.DeliveryManager;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
+import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
@@ -26,7 +28,7 @@ public class ShipmentService {
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
   private final DeliveryManagerAssigner assigner;
-  private final DeliveryEvents deliveryEvents;
+  private final DeliveryEvents events;
 
   @Transactional(readOnly = true)
   public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(UserContext user, UUID deliveryId) {
@@ -48,7 +50,7 @@ public class ShipmentService {
   public void updateStatus(UserContext user, UUID shipmentId, ShipmentStatus status) {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
-    shipment.updateShipmentStatus(status, user, permissionChecker);
+    shipment.updateShipmentStatus(status, user, permissionChecker, events);
   }
 
   @Transactional
@@ -67,6 +69,14 @@ public class ShipmentService {
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     DeliveryManager newManager =
         assigner.assignDeliveryManager(shipment.getFrom().getId(), shipment.getTo().getType());
-    shipment.reassignDeliveryManagerForSystem(newManager);
+    shipment.assignDeliveryManager(newManager, events);
+  }
+
+  public void assignManagerForInternal(UUID shipmentId) {
+    Shipment shipment =
+        deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
+    DeliveryManager newManager =
+        assigner.assignDeliveryManager(shipment.getFrom().getId(), shipment.getTo().getType());
+    shipment.assignDeliveryManager(newManager, events);
   }
 }
