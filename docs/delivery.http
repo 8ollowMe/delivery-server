@@ -1,3 +1,12 @@
+### [Setup] 테스트 전 데이터 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
 ### ===== 배송 목록 조회 =====
 
 ### 전체 조회 (마스터)
@@ -6,8 +15,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 전체 조회 (마스터) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("전체 조회 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 상태 필터 (마스터)
@@ -16,8 +28,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 상태 필터 (마스터) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("상태 필터 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 허브 관리자 - 담당 허브 관련 배송만 자동 필터
@@ -27,8 +42,11 @@ X-User-Role: HUB_MANAGER
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 목록 조회 (허브 관리자) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("목록 조회 (허브 관리자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 배송 담당자 - 본인 담당 배송만 자동 필터
@@ -37,8 +55,11 @@ X-User-Id: eeeeeeee-0000-0000-0000-000000000001
 X-User-Role: DELIVERY_MANAGER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 목록 조회 (배송 담당자) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("목록 조회 (배송 담당자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 업체 담당자 - 전체 조회
@@ -48,8 +69,11 @@ X-User-Role: VENDOR
 X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 목록 조회 (업체 담당자) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("목록 조회 (업체 담당자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 정렬 - 오래된 순 (마스터)
@@ -58,8 +82,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 정렬 조회 (마스터) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("정렬 조회 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### ===== 배송 단건 조회 =====
@@ -70,8 +97,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 단건 조회 (마스터) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("단건 조회 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 단건 조회 (허브 관리자)
@@ -81,8 +111,11 @@ X-User-Role: HUB_MANAGER
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 단건 조회 (허브 관리자) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("단건 조회 (허브 관리자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### 주문 ID로 조회 (마스터)
@@ -91,8 +124,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 주문ID 조회 (마스터) status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("주문ID 조회 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### ===== 실패 케이스 =====
@@ -101,8 +137,10 @@ X-User-Role: MASTER
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 
 > {%
-    var ok = response.body.success === false;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 헤더 없음 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 헤더 없음", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
 %}
 
 ### [실패 예상] 허브 관리자 - 관련 없는 허브로 단건 접근
@@ -112,8 +150,10 @@ X-User-Role: HUB_MANAGER
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
-    var ok = response.body.success === false;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 권한 없는 허브 관리자 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 권한 없는 허브 관리자", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
 %}
 
 ### [실패 예상] 배송 담당자 - 타인 배송 접근
@@ -122,8 +162,10 @@ X-User-Id: eeeeeeee-0000-0000-0000-000000000099
 X-User-Role: DELIVERY_MANAGER
 
 > {%
-    var ok = response.body.success === false;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 권한 없는 배송 담당자 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 권한 없는 배송 담당자", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
 %}
 
 ### [실패 예상] 존재하지 않는 배송 ID
@@ -132,8 +174,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.body.success === false && response.body.error.code === "D001";
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 존재하지 않는 배송 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 존재하지 않는 배송", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
 %}
 
 ### [실패 예상] 존재하지 않는 주문 ID
@@ -142,8 +187,11 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.body.success === false && response.body.error.code === "D001";
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 존재하지 않는 주문ID status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 존재하지 않는 주문ID", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
 %}
 
 ### [실패 예상] 잘못된 UUID 형식
@@ -152,8 +200,10 @@ X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 > {%
-    var ok = response.body.success === false;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 잘못된 UUID status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 잘못된 UUID", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
 %}
 
 ### ===== 배송 생성 =====
@@ -171,8 +221,11 @@ X-User-Role: MASTER
 }
 
 > {%
-    var ok = response.status === 200 && response.body.success;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] 배송 생성 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("배송 생성", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
 %}
 
 ### [실패 예상] HubClient 연결 불가
@@ -188,6 +241,215 @@ X-User-Role: MASTER
 }
 
 > {%
-    var ok = response.body.success === false;
-    client.log("[" + (ok ? "OK" : "FAIL") + "] HubClient 연결 불가 status=" + response.status + " body=\n" + JSON.stringify(response.body, null, 2));
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] HubClient 연결 불가", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### ===== 배송 취소 =====
+
+### [Setup] 취소 테스트 전 데이터 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 취소 (마스터)
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("취소 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [Setup] 취소 (허브 관리자) 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 취소 (허브 관리자 - 관련 허브)
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000002
+X-User-Role: HUB_MANAGER
+X-Hub-Id: dddddddd-0000-0000-0000-000000000001
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("취소 (허브 관리자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [Setup] 취소 (업체 담당자) 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 취소 (업체 담당자 - 도착지 일치)
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000003
+X-User-Role: VENDOR
+X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("취소 (업체 담당자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [실패 예상] 취소 - 허브 관리자 권한 없음 (관련 없는 허브)
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000002
+X-User-Role: HUB_MANAGER
+X-Hub-Id: dddddddd-0000-0000-0000-000000000099
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 취소 - 권한 없는 허브 관리자", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 취소 - 업체 담당자 도착지 불일치
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000003
+X-User-Role: VENDOR
+X-Vendor-Id: dddddddd-0000-0000-0000-000000000099
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 취소 - 도착지 불일치", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 취소 - 배송 담당자는 취소 불가
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
+X-User-Id: eeeeeeee-0000-0000-0000-000000000001
+X-User-Role: DELIVERY_MANAGER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 취소 - 배송 담당자 불가", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 취소 - 존재하지 않는 배송
+PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099/cancel
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 취소 - 존재하지 않는 배송", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
+%}
+
+### ===== 배송 삭제 =====
+
+### [Setup] 삭제 테스트 전 데이터 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 삭제 (마스터)
+DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("삭제 (마스터)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [Setup] 삭제 (허브 관리자) 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 삭제 (허브 관리자 - 출발 허브 일치)
+DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000002
+X-User-Role: HUB_MANAGER
+X-Hub-Id: dddddddd-0000-0000-0000-000000000001
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("삭제 (허브 관리자)", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### [실패 예상] 삭제 - 허브 관리자 출발 허브 불일치
+DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000002
+X-User-Role: HUB_MANAGER
+X-Hub-Id: dddddddd-0000-0000-0000-000000000099
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 삭제 - 출발 허브 불일치", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 삭제 - 업체 담당자는 삭제 불가
+DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
+X-User-Id: cccccccc-0000-0000-0000-000000000003
+X-User-Role: VENDOR
+X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 삭제 - 업체 담당자 불가", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+    });
+%}
+
+### [실패 예상] 삭제 - 존재하지 않는 배송
+DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("[실패 예상] 삭제 - 존재하지 않는 배송", function() {
+        client.assert(response.body.success === false, "success=false 기대");
+        client.assert(response.body.error.code === "D001", "에러코드 D001 기대");
+    });
 %}

@@ -17,7 +17,7 @@ public enum ShipmentStatus {
     IN_TRANSIT.allowedTransitions = Set.of(ARRIVED, FAILED);
     ARRIVED.allowedTransitions = Set.of(COMPLETED, FAILED);
     COMPLETED.allowedTransitions = Set.of();
-    FAILED.allowedTransitions = Set.of();
+    FAILED.allowedTransitions = Set.of(CANCELLED);
     CANCELLED.allowedTransitions = Set.of();
   }
 

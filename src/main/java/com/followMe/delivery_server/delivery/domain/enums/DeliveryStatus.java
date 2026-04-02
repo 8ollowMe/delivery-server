@@ -13,7 +13,7 @@ public enum DeliveryStatus {
     READY.allowedTransitions = Set.of(IN_PROGRESS, CANCELLED);
     IN_PROGRESS.allowedTransitions = Set.of(COMPLETED, FAILED);
     COMPLETED.allowedTransitions = Set.of();
-    FAILED.allowedTransitions = Set.of();
+    FAILED.allowedTransitions = Set.of(CANCELLED);
     CANCELLED.allowedTransitions = Set.of();
   }
 
