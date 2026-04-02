@@ -41,24 +41,28 @@ public class Delivery extends BaseAudit {
   }
 
   public DeliveryStatus getDeliveryStatus() {
-    if (this.shipments.stream().anyMatch(s -> s.getStatus() == ShipmentStatus.FAILED)) {
+    if (this.shipments.stream()
+        .anyMatch(shipment -> shipment.getStatus() == ShipmentStatus.FAILED)) {
       return DeliveryStatus.FAILED;
     }
-    if (this.shipments.stream().allMatch(s -> s.getStatus() == ShipmentStatus.COMPLETED)) {
+    if (this.shipments.stream()
+        .allMatch(shipment -> shipment.getStatus() == ShipmentStatus.COMPLETED)) {
       return DeliveryStatus.COMPLETED;
     }
-    if (this.shipments.stream().anyMatch(s -> ShipmentStatus.isInProgress(s.getStatus()))) {
+    if (this.shipments.stream()
+        .anyMatch(shipment -> ShipmentStatus.isInProgress(shipment.getStatus()))) {
       return DeliveryStatus.IN_PROGRESS;
     }
-    if (this.shipments.stream().allMatch(s -> s.getStatus() == ShipmentStatus.CANCELLED)) {
+    if (this.shipments.stream()
+        .allMatch(shipment -> shipment.getStatus() == ShipmentStatus.CANCELLED)) {
       return DeliveryStatus.CANCELLED;
     }
     return DeliveryStatus.READY;
   }
 
   public void cancel() {
-    if (this.getDeliveryStatus() != DeliveryStatus.READY
-        || this.getDeliveryStatus() != DeliveryStatus.FAILED) {
+    DeliveryStatus currentStatus = this.getDeliveryStatus();
+    if (currentStatus != DeliveryStatus.READY && currentStatus != DeliveryStatus.FAILED) {
       throw new InvalidDeliveryStatusException();
     }
     this.shipments.forEach(Shipment::cancel);

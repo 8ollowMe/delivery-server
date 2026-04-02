@@ -26,6 +26,9 @@ public class ShipmentServiceImpl implements ShipmentService {
   @Transactional(readOnly = true)
   public List<DeliveryResponseDto.ShipmentResponse> getShipmentsByDeliveryId(
       UserContext user, UUID deliveryId) {
+    deliveryRepository
+        .findById(deliveryId)
+        .orElseThrow(DeliveryException.DeliveryNotFoundException::new);
     List<DeliveryResponseDto.ShipmentResponse> shipmentDtoList =
         deliveryQueryRepository.findShipmentsByDeliveryId(deliveryId);
     checkReadAccess(user, shipmentDtoList);

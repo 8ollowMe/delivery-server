@@ -6,6 +6,7 @@ import com.followMe.delivery_server.delivery.application.UserContext;
 import com.followMe.delivery_server.delivery.application.UserRole;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentStatusUpdateRequest;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class ShipmentController {
   public ResponseEntity<ApiResponse> updateStatus(
       @PathVariable UUID shipmentId,
       @ModelAttribute UserContext user,
-      @RequestBody ShipmentStatusUpdateRequest statusRequest) {
+      @RequestBody @Valid ShipmentStatusUpdateRequest statusRequest) {
     shipmentService.updateStatus(user, shipmentId, statusRequest.status());
     return ApiResponse.ok();
   }
