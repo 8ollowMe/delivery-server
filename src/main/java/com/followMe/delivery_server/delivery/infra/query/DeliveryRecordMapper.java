@@ -89,40 +89,45 @@ public class DeliveryRecordMapper {
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
-  private NodeResponse fromNodeOf(Record r) {
-    return new NodeResponse(
-        r.get(P_SHIPMENT.FROM_NODE_ID),
-        NodeType.valueOf(r.get(P_SHIPMENT.FROM_NODE_TYPE)),
-        r.get(P_SHIPMENT.FROM_NODE_NAME));
+  public List<ShipmentResponse> toShipmentResponseList(Result<Record> records) {
+    return records.map(this::toShipmentResponse);
   }
 
-  private NodeResponse toNodeOf(Record r) {
-    return new NodeResponse(
-        r.get(P_SHIPMENT.TO_NODE_ID),
-        NodeType.valueOf(r.get(P_SHIPMENT.TO_NODE_TYPE)),
-        r.get(P_SHIPMENT.TO_NODE_NAME));
-  }
-
-  private ShipmentResponse toShipmentResponse(Record r) {
+  protected ShipmentResponse toShipmentResponse(Record record) {
     return new ShipmentResponse(
-        r.get(P_SHIPMENT.ID),
-        r.get(P_SHIPMENT.SEQUENCE),
-        ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS)),
-        ShipmentType.valueOf(r.get(P_SHIPMENT.TYPE)),
-        fromNodeOf(r),
-        toNodeOf(r),
-        r.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
+        record.get(P_SHIPMENT.ID),
+        record.get(P_SHIPMENT.SEQUENCE),
+        ShipmentStatus.valueOf(record.get(P_SHIPMENT.STATUS)),
+        ShipmentType.valueOf(record.get(P_SHIPMENT.TYPE)),
+        fromNodeOf(record),
+        toNodeOf(record),
+        record.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
             ? new DeliveryManagerResponse(
-                r.get(P_SHIPMENT.DELIVERY_MANAGER_ID), r.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
+                record.get(P_SHIPMENT.DELIVERY_MANAGER_ID),
+                record.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
             : null,
-        r.get(P_SHIPMENT.SHIPPED_AT) != null
-            ? r.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.SHIPPED_AT) != null
+            ? record.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
             : null,
-        r.get(P_SHIPMENT.ARRIVED_AT) != null
-            ? r.get(P_SHIPMENT.ARRIVED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.ARRIVED_AT) != null
+            ? record.get(P_SHIPMENT.ARRIVED_AT).toLocalDateTime()
             : null,
-        r.get(P_SHIPMENT.COMPLETED_AT) != null
-            ? r.get(P_SHIPMENT.COMPLETED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.COMPLETED_AT) != null
+            ? record.get(P_SHIPMENT.COMPLETED_AT).toLocalDateTime()
             : null);
+  }
+
+  private NodeResponse fromNodeOf(Record record) {
+    return new NodeResponse(
+        record.get(P_SHIPMENT.FROM_NODE_ID),
+        NodeType.valueOf(record.get(P_SHIPMENT.FROM_NODE_TYPE)),
+        record.get(P_SHIPMENT.FROM_NODE_NAME));
+  }
+
+  private NodeResponse toNodeOf(Record record) {
+    return new NodeResponse(
+        record.get(P_SHIPMENT.TO_NODE_ID),
+        NodeType.valueOf(record.get(P_SHIPMENT.TO_NODE_TYPE)),
+        record.get(P_SHIPMENT.TO_NODE_NAME));
   }
 }

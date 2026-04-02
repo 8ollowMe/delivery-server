@@ -88,4 +88,15 @@ public class DeliveryQueryRepository {
     if (records.isEmpty()) throw new DeliveryNotFoundException();
     return recordMapper.toDeliveryResponse(records.getFirst(), records.stream());
   }
+
+  public List<DeliveryResponseDto.ShipmentResponse> findShipmentsByDeliveryId(UUID deliveryId) {
+    Result<Record> records =
+        dsl.select()
+            .from(P_SHIPMENT)
+            .where(P_SHIPMENT.DELIVERY_ID.eq(deliveryId))
+            .orderBy(P_SHIPMENT.SEQUENCE.asc())
+            .fetch();
+    if (records.isEmpty()) throw new DeliveryException.ShipmentNotFoundException();
+    return recordMapper.toShipmentResponseList(records);
+  }
 }
