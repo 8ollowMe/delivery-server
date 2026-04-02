@@ -3,12 +3,12 @@ package com.followMe.delivery_server.delivery.infra.query;
 import static com.followMe.delivery_server.jooq.tables.PDelivery.P_DELIVERY;
 import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
+import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.presentation.dto.DeliveryResponse;
-import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.stream.Stream;
 import org.jooq.Record;

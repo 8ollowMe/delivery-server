@@ -3,7 +3,7 @@ package com.followMe.delivery_server.delivery.presentation;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
-import com.followMe.delivery_server.delivery.presentation.dto.DeliveryRequest;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

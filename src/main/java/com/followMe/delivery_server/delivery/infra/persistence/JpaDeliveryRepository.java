@@ -15,6 +15,10 @@ public interface JpaDeliveryRepository extends DeliveryRepository, JpaRepository
   @Query("SELECT DISTINCT d FROM Delivery d LEFT JOIN FETCH d.shipments WHERE d.id = :id")
   Optional<Delivery> findById(UUID id);
 
+  @Query(
+      "SELECT DISTINCT d FROM Delivery d LEFT JOIN FETCH d.shipments WHERE d.orderId.value = :orderId")
+  Optional<Delivery> findByOrderId(UUID orderId);
+
   @Query("SELECT s FROM Shipment s JOIN FETCH s.delivery WHERE s.id = :shipmentId")
   Optional<Shipment> findShipmentById(UUID shipmentId);
 }

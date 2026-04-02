@@ -63,6 +63,7 @@ public class Delivery extends BaseAudit {
 
   public void cancel(UserContext user, DeliveryPermissionChecker permissionChecker) {
     permissionChecker.checkCancelAccess(user, this);
+    DeliveryStatus currentStatus = this.getDeliveryStatus();
     if (currentStatus != DeliveryStatus.READY && currentStatus != DeliveryStatus.FAILED) {
       throw new InvalidDeliveryStatusException();
     }

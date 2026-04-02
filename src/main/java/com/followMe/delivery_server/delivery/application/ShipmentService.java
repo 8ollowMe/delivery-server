@@ -1,14 +1,14 @@
 package com.followMe.delivery_server.delivery.application;
 
+import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
+import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
-import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
-import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +25,18 @@ public class ShipmentService {
 
   @Transactional(readOnly = true)
   public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(UserContext user, UUID deliveryId) {
-    deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    List<ShipmentResponse.Detail> shipmentDtoList =
-        deliveryQueryPort.findShipmentsByDeliveryId(deliveryId);
-    permissionChecker.checkReadAccess(user, shipmentDtoList);
-    return shipmentDtoList;
+    Delivery delivery =
+        deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
+    permissionChecker.checkReadAccess(user, delivery.getShipments());
+    return deliveryQueryPort.findShipmentsByDeliveryId(deliveryId);
   }
 
   @Transactional(readOnly = true)
   public ShipmentResponse.Detail getShipment(UserContext user, UUID shipmentId) {
-    ShipmentResponse.Detail shipment = deliveryQueryPort.findShipmentById(shipmentId);
+    Shipment shipment =
+        deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     permissionChecker.checkReadAccess(user, List.of(shipment));
-    return shipment;
+    return deliveryQueryPort.findShipmentById(shipmentId);
   }
 
   @Transactional

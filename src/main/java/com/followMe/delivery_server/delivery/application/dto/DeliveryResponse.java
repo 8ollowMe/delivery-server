@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.presentation.dto;
+package com.followMe.delivery_server.delivery.application.dto;
 
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
@@ -24,7 +24,7 @@ public class DeliveryResponse {
       NodeInfo toVendor,
       int totalShipments,
       int completedShipments,
-      NodeInfo lastestProgressedNode,
+      NodeInfo latestProgressedNode,
       ShipmentStatus currentProgressStatus,
       LocalDateTime createdAt) {}
 

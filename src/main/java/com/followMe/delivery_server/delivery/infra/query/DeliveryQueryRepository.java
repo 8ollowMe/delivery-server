@@ -5,12 +5,12 @@ import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
+import com.followMe.delivery_server.delivery.application.DeliveryQueryPort;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
+import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
-import com.followMe.delivery_server.delivery.domain.query.DeliveryQueryPort;
-import com.followMe.delivery_server.delivery.presentation.dto.DeliveryResponse;
-import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +101,6 @@ public class DeliveryQueryRepository implements DeliveryQueryPort {
             .where(P_SHIPMENT.DELIVERY_ID.eq(deliveryId))
             .orderBy(P_SHIPMENT.SEQUENCE.asc())
             .fetch();
-    if (records.isEmpty()) throw new ShipmentNotFoundException();
     return recordMapper.toShipmentDetailList(records);
   }
 

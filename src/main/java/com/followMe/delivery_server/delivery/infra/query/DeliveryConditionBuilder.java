@@ -3,7 +3,7 @@ package com.followMe.delivery_server.delivery.infra.query;
 import static com.followMe.delivery_server.jooq.tables.PDelivery.P_DELIVERY;
 import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 
-import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
+import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;
 import java.util.ArrayList;
 import java.util.List;

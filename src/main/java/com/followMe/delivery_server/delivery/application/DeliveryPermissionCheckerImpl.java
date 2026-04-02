@@ -2,12 +2,11 @@ package com.followMe.delivery_server.delivery.application;
 
 import com.followMe.common.exception.BusinessException;
 import com.followMe.common.exception.CommonErrorCode;
-import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.Delivery;
+import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
-import com.followMe.delivery_server.delivery.presentation.dto.ShipmentResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,15 +15,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker {
-
-  private static Set<UUID> nodeIdsFrom(List<Shipment> shipments) {
-    Set<UUID> nodeIds = new HashSet<>();
-    for (var s : shipments) {
-      if (s.getFrom() != null) nodeIds.add(s.getFrom().getId());
-      if (s.getTo() != null) nodeIds.add(s.getTo().getId());
-    }
-    return nodeIds;
-  }
 
   private static void checkReadAccess(UserContext user, Set<UUID> nodeIds, Set<UUID> managerIds) {
     switch (user.role()) {
@@ -40,14 +30,23 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
     }
   }
 
+  private static Set<UUID> nodeIdsFrom(List<Shipment> shipments) {
+    Set<UUID> nodeIds = new HashSet<>();
+    for (var s : shipments) {
+      if (s.getFrom() != null) nodeIds.add(s.getFrom().getId());
+      if (s.getTo() != null) nodeIds.add(s.getTo().getId());
+    }
+    return nodeIds;
+  }
+
   @Override
-  public void checkReadAccess(UserContext user, List<ShipmentResponse.Detail> shipments) {
+  public void checkReadAccess(UserContext user, List<Shipment> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
-    for (var shipment : shipments) {
-      if (shipment.from() != null) nodeIds.add(shipment.from().id());
-      if (shipment.to() != null) nodeIds.add(shipment.to().id());
-      if (shipment.deliveryManager() != null) managerIds.add(shipment.deliveryManager().id());
+    for (var s : shipments) {
+      if (s.getFrom() != null) nodeIds.add(s.getFrom().getId());
+      if (s.getTo() != null) nodeIds.add(s.getTo().getId());
+      if (s.getDeliveryManager() != null) managerIds.add(s.getDeliveryManager().getId());
     }
     checkReadAccess(user, nodeIds, managerIds);
   }
