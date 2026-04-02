@@ -4,12 +4,14 @@ import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
+import com.followMe.delivery_server.delivery.application.ShipmentService;
 import com.followMe.delivery_server.delivery.application.UserContext;
 import com.followMe.delivery_server.delivery.application.UserRole;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
 import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
 
   private final DeliveryService deliveryService;
+  private final ShipmentService shipmentService;
 
   @ModelAttribute
   public UserContext userContext(
@@ -74,5 +77,13 @@ public class DeliveryController {
       @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
     deliveryService.deleteDelivery(user, deliveryId);
     return ApiResponse.ok();
+  }
+
+  @GetMapping("/{deliveryId}/shipments")
+  public ResponseEntity<ApiResponse> getShipmentsByDeliveryId(
+      @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
+    List<DeliveryResponseDto.ShipmentResponse> response =
+        shipmentService.getShipmentsByDeliveryId(user, deliveryId);
+    return ApiResponse.ok(response);
   }
 }
