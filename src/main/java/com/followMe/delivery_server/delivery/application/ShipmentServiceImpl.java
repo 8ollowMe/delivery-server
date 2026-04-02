@@ -30,4 +30,13 @@ public class ShipmentServiceImpl implements ShipmentService {
     checkReadAccess(user, shipmentDtoList);
     return shipmentDtoList;
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public DeliveryResponseDto.ShipmentResponse getShipment(UserContext user, UUID shipmentId) {
+    DeliveryResponseDto.ShipmentResponse shipmentResponse =
+        deliveryQueryRepository.findShipmentById(shipmentId);
+    checkReadAccess(user, List.of(shipmentResponse));
+    return shipmentResponse;
+  }
 }
