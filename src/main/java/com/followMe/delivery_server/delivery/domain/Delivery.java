@@ -30,6 +30,7 @@ public class Delivery extends BaseAudit {
   @Column(nullable = false, length = 30)
   private DeliveryStatus status;
 
+  @OrderBy("sequence ASC")
   @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Shipment> shipments = new ArrayList<>();
 

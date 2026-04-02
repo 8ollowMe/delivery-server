@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
 
-  @Query("SELECT d FROM Delivery d LEFT JOIN FETCH d.shipments WHERE d.id = :id")
+  @Query("SELECT DISTINCT d FROM Delivery d LEFT JOIN FETCH d.shipments WHERE d.id = :id")
   Optional<Delivery> findById(UUID id);
 }
