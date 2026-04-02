@@ -1,7 +1,5 @@
 package com.followMe.delivery_server.delivery.application;
 
-import static com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker.*;
-
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
@@ -24,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class DeliveryServiceImpl {
+public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
   private final DeliveryQueryPort deliveryQueryPort;
@@ -71,6 +69,6 @@ public class DeliveryServiceImpl {
   public void deleteDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    delivery.softDelete(user,permissionChecker);
+    delivery.softDelete(user, permissionChecker);
   }
 }

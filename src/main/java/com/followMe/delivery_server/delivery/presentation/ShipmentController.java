@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ShipmentController {
 
-  private final ShipmentServiceImpl shipmentService;
+  private final ShipmentService shipmentService;
 
   @ModelAttribute
   public UserContext userContext(
@@ -39,7 +39,7 @@ public class ShipmentController {
   public ResponseEntity<ApiResponse> updateStatus(
       @PathVariable UUID shipmentId,
       @ModelAttribute UserContext user,
-      @RequestBody  @Valid  ShipmentRequest.UpdateStatus request) {
+      @RequestBody @Valid ShipmentRequest.UpdateStatus request) {
     shipmentService.updateStatus(user, shipmentId, request.status());
     return ApiResponse.ok();
   }
