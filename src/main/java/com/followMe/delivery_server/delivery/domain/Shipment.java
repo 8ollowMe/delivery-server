@@ -7,6 +7,7 @@ import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidNodeInformationException;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidShipmentStatusException;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.NodeTypeMismatchException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.ShipmentNotFoundException;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -121,8 +122,25 @@ public class Shipment extends BaseAudit {
   }
 
   public void ship() {
+    if (sequence > 1) {
+      Shipment prev = getPreviousShipment();
+      if (prev.getStatus() != ShipmentStatus.COMPLETED) {
+        throw new InvalidShipmentStatusException();
+      }
+    }
     transitionTo(ShipmentStatus.SHIPPED);
     this.shippedAt = Instant.now();
+  }
+
+  private Shipment getPreviousShipment() {
+    Shipment prev;
+    for (Shipment shipment : delivery.getShipments()) {
+      if (shipment.getSequence() == this.sequence - 1) {
+        prev = shipment;
+        return prev;
+      }
+    }
+    throw new ShipmentNotFoundException();
   }
 
   public void transit() {
@@ -145,5 +163,17 @@ public class Shipment extends BaseAudit {
 
   public void cancel() {
     transitionTo(ShipmentStatus.CANCELLED);
+  }
+
+  public void updateShipmentStatus(ShipmentStatus status) {
+    switch (status) {
+      case SHIPPED -> this.ship();
+
+      case IN_TRANSIT -> this.transit();
+      case ARRIVED -> this.arrive();
+      case COMPLETED -> this.complete();
+      case FAILED -> this.fail();
+      default -> throw new InvalidShipmentStatusException();
+    }
   }
 }

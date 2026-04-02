@@ -12,14 +12,15 @@ import java.util.*;
 
 public class DeliveryPermissionChecker {
 
-  public static void checkReadAccess(UserContext user, DeliveryResponseDto delivery) {
-    ShipmentInfoIds shipmentInfoIds = getShipmentInfoIds(delivery);
+  public static void checkReadAccess(
+      UserContext user, List<DeliveryResponseDto.ShipmentResponse> shipments) {
+    ShipmentInfoIds shipmentInfoIds = getShipmentInfoIdsFromDto(shipments);
 
     checkReadAccess(user, shipmentInfoIds.nodeIds, shipmentInfoIds.managerIds);
   }
 
   public static void checkCancelAccess(UserContext user, Delivery delivery) {
-    ShipmentInfoIds shipmentInfoIds = getShipmentInfoIds(delivery.getShipments());
+    ShipmentInfoIds shipmentInfoIds = getShipmentInfoIdsFromEntity(delivery.getShipments());
     switch (user.role()) {
       case MASTER -> {}
       case HUB_MANAGER -> {
@@ -59,9 +60,22 @@ public class DeliveryPermissionChecker {
     }
   }
 
+  public static void checkShipmentStatusUpdateAccess(UserContext user, Shipment shipment) {
+    switch (user.role()) {
+      case MASTER -> {}
+      case DELIVERY_MANAGER -> {
+        if (shipment.getDeliveryManager() == null
+            || !shipment.getDeliveryManager().getId().equals(user.userId())) {
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        }
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
+  }
+
   private record ShipmentInfoIds(Set<UUID> nodeIds, Set<UUID> managerIds) {}
 
-  private static ShipmentInfoIds getShipmentInfoIds(List<Shipment> shipments) {
+  private static ShipmentInfoIds getShipmentInfoIdsFromEntity(List<Shipment> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
 
@@ -75,11 +89,12 @@ public class DeliveryPermissionChecker {
     return new ShipmentInfoIds(nodeIds, managerIds);
   }
 
-  private static ShipmentInfoIds getShipmentInfoIds(DeliveryResponseDto delivery) {
+  private static ShipmentInfoIds getShipmentInfoIdsFromDto(
+      List<DeliveryResponseDto.ShipmentResponse> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     Set<UUID> managerIds = new HashSet<>();
 
-    for (var shipment : delivery.shipments()) {
+    for (var shipment : shipments) {
       if (shipment.from() != null) nodeIds.add(shipment.from().id());
       if (shipment.to() != null) nodeIds.add(shipment.to().id());
       if (shipment.deliveryManager() != null) managerIds.add(shipment.deliveryManager().id());
@@ -90,13 +105,13 @@ public class DeliveryPermissionChecker {
 
   private static void checkReadAccess(
       UserContext user, Set<UUID> nodeIds, Set<UUID> deliveryManagerIds) {
-    if (user.role() == MASTER || user.role() == VENDOR) return;
-    if (user.role() == HUB_MANAGER) {
-      checkIfDeliveryRelatedToUserHub(user.hubId(), nodeIds);
-      return;
-    }
-    if (user.role() == DELIVERY_MANAGER) {
-      checkIfAssignedToUser(user.userId(), deliveryManagerIds);
+    switch (user.role()) {
+      case MASTER, VENDOR -> {}
+      case DELIVERY_MANAGER -> checkIfAssignedToUser(user.userId(), deliveryManagerIds);
+
+      case HUB_MANAGER -> checkIfDeliveryRelatedToUserHub(user.hubId(), nodeIds);
+
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
     }
   }
 

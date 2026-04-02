@@ -28,7 +28,7 @@ public class DeliveryRecordMapper {
     return new DeliveryResponseDto(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
-        DeliveryStatus.valueOf(first.get(P_DELIVERY.STATUS)),
+        deriveDeliveryStatus(shipments.stream().map(ShipmentResponse::status).toList()),
         shipments,
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
@@ -40,7 +40,7 @@ public class DeliveryRecordMapper {
       return new DeliveryListItemDto(
           first.get(P_DELIVERY.ID),
           first.get(P_DELIVERY.ORDER_ID),
-          DeliveryStatus.valueOf(first.get(P_DELIVERY.STATUS)),
+          DeliveryStatus.READY,
           null,
           null,
           0,
@@ -76,10 +76,13 @@ public class DeliveryRecordMapper {
       }
     }
 
+    List<ShipmentStatus> statuses =
+        shipments.stream().map(r -> ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS))).toList();
+
     return new DeliveryListItemDto(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
-        DeliveryStatus.valueOf(first.get(P_DELIVERY.STATUS)),
+        deriveDeliveryStatus(statuses),
         fromHub,
         toVendor,
         totalShipments,
@@ -89,40 +92,56 @@ public class DeliveryRecordMapper {
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
 
-  private NodeResponse fromNodeOf(Record r) {
-    return new NodeResponse(
-        r.get(P_SHIPMENT.FROM_NODE_ID),
-        NodeType.valueOf(r.get(P_SHIPMENT.FROM_NODE_TYPE)),
-        r.get(P_SHIPMENT.FROM_NODE_NAME));
+  public List<ShipmentResponse> toShipmentResponseList(Result<Record> records) {
+    return records.map(this::toShipmentResponse);
   }
 
-  private NodeResponse toNodeOf(Record r) {
-    return new NodeResponse(
-        r.get(P_SHIPMENT.TO_NODE_ID),
-        NodeType.valueOf(r.get(P_SHIPMENT.TO_NODE_TYPE)),
-        r.get(P_SHIPMENT.TO_NODE_NAME));
-  }
-
-  private ShipmentResponse toShipmentResponse(Record r) {
+  protected ShipmentResponse toShipmentResponse(Record record) {
     return new ShipmentResponse(
-        r.get(P_SHIPMENT.ID),
-        r.get(P_SHIPMENT.SEQUENCE),
-        ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS)),
-        ShipmentType.valueOf(r.get(P_SHIPMENT.TYPE)),
-        fromNodeOf(r),
-        toNodeOf(r),
-        r.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
+        record.get(P_SHIPMENT.ID),
+        record.get(P_SHIPMENT.SEQUENCE),
+        ShipmentStatus.valueOf(record.get(P_SHIPMENT.STATUS)),
+        ShipmentType.valueOf(record.get(P_SHIPMENT.TYPE)),
+        fromNodeOf(record),
+        toNodeOf(record),
+        record.get(P_SHIPMENT.DELIVERY_MANAGER_ID) != null
             ? new DeliveryManagerResponse(
-                r.get(P_SHIPMENT.DELIVERY_MANAGER_ID), r.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
+                record.get(P_SHIPMENT.DELIVERY_MANAGER_ID),
+                record.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
             : null,
-        r.get(P_SHIPMENT.SHIPPED_AT) != null
-            ? r.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.SHIPPED_AT) != null
+            ? record.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
             : null,
-        r.get(P_SHIPMENT.ARRIVED_AT) != null
-            ? r.get(P_SHIPMENT.ARRIVED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.ARRIVED_AT) != null
+            ? record.get(P_SHIPMENT.ARRIVED_AT).toLocalDateTime()
             : null,
-        r.get(P_SHIPMENT.COMPLETED_AT) != null
-            ? r.get(P_SHIPMENT.COMPLETED_AT).toLocalDateTime()
+        record.get(P_SHIPMENT.COMPLETED_AT) != null
+            ? record.get(P_SHIPMENT.COMPLETED_AT).toLocalDateTime()
             : null);
+  }
+
+  private DeliveryStatus deriveDeliveryStatus(List<ShipmentStatus> statuses) {
+    if (statuses.isEmpty()) return DeliveryStatus.READY;
+    if (statuses.stream().anyMatch(s -> s == ShipmentStatus.FAILED)) return DeliveryStatus.FAILED;
+    if (statuses.stream().allMatch(s -> s == ShipmentStatus.COMPLETED))
+      return DeliveryStatus.COMPLETED;
+    if (statuses.stream().anyMatch(ShipmentStatus::isInProgress)) return DeliveryStatus.IN_PROGRESS;
+    if (statuses.stream().allMatch(s -> s == ShipmentStatus.CANCELLED))
+      return DeliveryStatus.CANCELLED;
+    return DeliveryStatus.READY;
+  }
+
+  private NodeResponse fromNodeOf(Record record) {
+    return new NodeResponse(
+        record.get(P_SHIPMENT.FROM_NODE_ID),
+        NodeType.valueOf(record.get(P_SHIPMENT.FROM_NODE_TYPE)),
+        record.get(P_SHIPMENT.FROM_NODE_NAME));
+  }
+
+  private NodeResponse toNodeOf(Record record) {
+    return new NodeResponse(
+        record.get(P_SHIPMENT.TO_NODE_ID),
+        NodeType.valueOf(record.get(P_SHIPMENT.TO_NODE_TYPE)),
+        record.get(P_SHIPMENT.TO_NODE_NAME));
   }
 }

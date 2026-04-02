@@ -39,7 +39,7 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Transactional(readOnly = true)
   public DeliveryResponseDto getDelivery(UserContext user, UUID deliveryId) {
     DeliveryResponseDto deliveryResponseDto = deliveryQueryRepository.findDeliveryById(deliveryId);
-    checkReadAccess(user, deliveryResponseDto);
+    checkReadAccess(user, deliveryResponseDto.shipments());
     return deliveryResponseDto;
   }
 
@@ -57,7 +57,7 @@ public class DeliveryServiceImpl implements DeliveryService {
   public DeliveryResponseDto getDeliveryByOrderId(UserContext user, UUID orderId) {
     DeliveryResponseDto deliveryResponseDto =
         deliveryQueryRepository.findDeliveryByOrderId(orderId);
-    checkReadAccess(user, deliveryResponseDto);
+    checkReadAccess(user, deliveryResponseDto.shipments());
     return deliveryResponseDto;
   }
 
