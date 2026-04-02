@@ -2,6 +2,7 @@ package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
+import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidDeliveryStatusException;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -26,17 +27,12 @@ public class Delivery extends BaseAudit {
   @AttributeOverrides({@AttributeOverride(name = "value", column = @Column(name = "order_id"))})
   private OrderId orderId;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 30)
-  private DeliveryStatus status;
-
   @OrderBy("sequence ASC")
   @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Shipment> shipments = new ArrayList<>();
 
   private Delivery(OrderId orderId, List<Node> nodes) {
     this.orderId = orderId;
-    this.status = DeliveryStatus.READY;
     this.shipments = Shipment.createList(this, nodes);
   }
 
@@ -44,44 +40,32 @@ public class Delivery extends BaseAudit {
     return new Delivery(OrderId.of(orderId), nodes);
   }
 
-  public void start() {
-    if (this.status.isTransitionNotAllowed(DeliveryStatus.IN_PROGRESS)) {
-      throw new InvalidDeliveryStatusException();
+  public DeliveryStatus getDeliveryStatus() {
+    if (this.shipments.stream().anyMatch(s -> s.getStatus() == ShipmentStatus.FAILED)) {
+      return DeliveryStatus.FAILED;
     }
-    this.status = DeliveryStatus.IN_PROGRESS;
-  }
-
-  public void complete() {
-    if (this.status.isTransitionNotAllowed(DeliveryStatus.COMPLETED)) {
-      throw new InvalidDeliveryStatusException();
+    if (this.shipments.stream().allMatch(s -> s.getStatus() == ShipmentStatus.COMPLETED)) {
+      return DeliveryStatus.COMPLETED;
     }
-    this.status = DeliveryStatus.COMPLETED;
-  }
-
-  public void fail() {
-    if (this.status.isTransitionNotAllowed(DeliveryStatus.FAILED)) {
-      throw new InvalidDeliveryStatusException();
+    if (this.shipments.stream().anyMatch(s -> ShipmentStatus.isInProgress(s.getStatus()))) {
+      return DeliveryStatus.IN_PROGRESS;
     }
-    this.status = DeliveryStatus.FAILED;
+    if (this.shipments.stream().allMatch(s -> s.getStatus() == ShipmentStatus.CANCELLED)) {
+      return DeliveryStatus.CANCELLED;
+    }
+    return DeliveryStatus.READY;
   }
 
   public void cancel() {
-    if (this.status.isTransitionNotAllowed(DeliveryStatus.CANCELLED)) {
+    if (this.getDeliveryStatus() != DeliveryStatus.READY
+        || this.getDeliveryStatus() != DeliveryStatus.FAILED) {
       throw new InvalidDeliveryStatusException();
     }
     this.shipments.forEach(Shipment::cancel);
-    this.status = DeliveryStatus.CANCELLED;
   }
 
   public void softDelete(UUID deletedBy) {
     super.softDelete(deletedBy);
     this.shipments.forEach(shipment -> shipment.softDelete(deletedBy));
-  }
-
-  public void updateStatus(DeliveryStatus status) {
-    if (this.status.isTransitionNotAllowed(status)) {
-      throw new InvalidDeliveryStatusException();
-    }
-    this.status = status;
   }
 }
