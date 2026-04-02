@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ShipmentServiceImpl implements ShipmentService {
 
+  private final DeliveryRepository deliveryRepository;
   private final DeliveryQueryRepository deliveryQueryRepository;
 
   @Override
@@ -38,5 +39,16 @@ public class ShipmentServiceImpl implements ShipmentService {
         deliveryQueryRepository.findShipmentById(shipmentId);
     checkReadAccess(user, List.of(shipmentResponse));
     return shipmentResponse;
+  }
+
+  @Override
+  @Transactional
+  public void updateStatus(UserContext user, UUID shipmentId, ShipmentStatus status) {
+    Shipment shipment =
+        deliveryRepository
+            .findShipmentById(shipmentId)
+            .orElseThrow(DeliveryException.ShipmentNotFoundException::new);
+    checkShipmentStatusUpdateAccess(user, shipment);
+    shipment.updateShipmentStatus(status);
   }
 }
