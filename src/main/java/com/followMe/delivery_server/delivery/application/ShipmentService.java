@@ -26,6 +26,7 @@ public class ShipmentService {
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
   private final DeliveryManagerAssigner assigner;
+  private final DeliveryEvents deliveryEvents;
 
   @Transactional(readOnly = true)
   public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(UserContext user, UUID deliveryId) {

@@ -150,10 +150,15 @@ public class Shipment extends BaseAudit {
 
   public void reassignDeliveryManagerForSystem(DeliveryManager deliveryManager) {
     if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
-      this.deliveryManager = deliveryManager;
+      setDeliveryManager(deliveryManager, events);
     } else {
       throw new InvalidShipmentStatusException();
     }
+  }
+
+  private void setDeliveryManager(DeliveryManager deliveryManager, DeliveryEvents events) {
+    this.deliveryManager = deliveryManager;
+    events.deliveryAssigned(this);
   }
 
   public void ship() {
@@ -187,9 +192,13 @@ public class Shipment extends BaseAudit {
     this.arrivedAt = Instant.now();
   }
 
-  public void complete() {
+  public void complete(DeliveryEvents events) {
     transitionTo(ShipmentStatus.COMPLETED);
     this.completedAt = Instant.now();
+    if (type == ShipmentType.HUB_TO_VENDOR) {
+      delivery.complete();
+      events.deliveryCompleted(delivery);
+    } else events.shipmentCompleted(this);
   }
 
   public void fail() {
