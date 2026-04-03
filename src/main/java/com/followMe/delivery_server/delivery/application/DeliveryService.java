@@ -93,9 +93,7 @@ public class DeliveryService {
   @Transactional(readOnly = true)
   public StatusResponse getDeliveryStatusForInternal(UUID deliveryId) {
     Delivery delivery =
-        deliveryRepository
-            .findByIdFetchShipments(deliveryId)
-            .orElseThrow(DeliveryNotFoundException::new);
+        deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
     return StatusResponse.from(delivery);
   }
 }

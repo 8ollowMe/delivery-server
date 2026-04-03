@@ -1,12 +1,9 @@
 package com.followMe.delivery_server.delivery.domain;
 
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
-import java.util.UUID;
-
 import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Sort;

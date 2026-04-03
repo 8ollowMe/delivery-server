@@ -51,12 +51,12 @@ public class ShipmentService {
   }
 
   @Transactional
-  public void reassignDeliveryManagerForInternal(
+  public void reassignDeliveryManager(
       UserContext user, UUID shipmentId, ShipmentRequest.UpdateDeliveryManager request) {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     DeliveryManager newManager =
-        assigner.getDeliveryManager(request.newManagerId(), shipment.getFrom().getId());
+        assigner.getDeliveryManager(request.deliveryManagerId(), shipment.getFrom().getId());
     shipment.reassignDeliveryManager(user, newManager, permissionChecker);
   }
 
@@ -65,7 +65,7 @@ public class ShipmentService {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     DeliveryManager newManager =
-        assigner.assignDeliveryManager(shipment.getFrom().getId(), shipment.getType());
-    shipment.reassignDeliveryManager(newManager);
+        assigner.assignDeliveryManager(shipment.getFrom().getId(), shipment.getTo().getType());
+    shipment.reassignDeliveryManagerForSystem(newManager);
   }
 }

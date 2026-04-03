@@ -1,6 +1,6 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
-import com.followMe.delivery_server.delivery.presentation.dto.OrderRequest;
+import com.followMe.delivery_server.delivery.application.dto.OrderRequest;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PatchMapping;

@@ -26,9 +26,6 @@ public interface JpaDeliveryRepository extends DeliveryRepository, JpaRepository
   @Query("SELECT s FROM Shipment s JOIN FETCH s.delivery WHERE s.id = :shipmentId")
   Optional<Shipment> findShipmentById(UUID shipmentId);
 
-  @Query("SELECT DISTINCT d FROM Delivery d LEFT JOIN FETCH d.shipments WHERE d.id = :id")
-  Optional<Delivery> findByIdFetchShipments(UUID id);
-
   @Query(
       "SELECT s.deliveryManager.id, COUNT(s) FROM Shipment s "
           + "WHERE s.status NOT IN :excludedStatus AND s.deliveryManager.id IN :managerIds "

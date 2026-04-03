@@ -1,8 +1,6 @@
 package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
@@ -143,6 +141,14 @@ public class Shipment extends BaseAudit {
       DeliveryManager deliveryManager,
       DeliveryPermissionChecker permissionChecker) {
     permissionChecker.checkShipmentManagerReassignAccess(user, this);
+    if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
+      this.deliveryManager = deliveryManager;
+    } else {
+      throw new InvalidShipmentStatusException();
+    }
+  }
+
+  public void reassignDeliveryManagerForSystem(DeliveryManager deliveryManager) {
     if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
       this.deliveryManager = deliveryManager;
     } else {

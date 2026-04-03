@@ -49,7 +49,7 @@ public class UserClientLocalStub implements UserClient {
     if (userId.equals(UNKNOWN_USER_ID)) {
       throw new UserClientUnavailableException();
     }
-    return new UserInfo(userId, "테스트 사용자", UUID.randomUUID(), UUID.randomUUID(), UserRole.MASTER);
+    return new UserInfo(userId, "테스트 사용자", UUID.randomUUID(), UUID.randomUUID(), UserRole.DELIVERY);
   }
 
   @Override

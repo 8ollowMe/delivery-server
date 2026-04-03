@@ -1,8 +1,6 @@
 package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;

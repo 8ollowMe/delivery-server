@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class ShipmentInternalController {
   private final ShipmentService shipmentService;
 
-
   @PatchMapping("/{shipmentId}/reassign")
   public ResponseEntity<ApiResponse> reassignDeliveryManager(@PathVariable UUID shipmentId) {
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.Query;
 
 public interface DeliveryRepository {
   Delivery save(Delivery delivery);
@@ -15,8 +14,6 @@ public interface DeliveryRepository {
   Optional<Delivery> findById(UUID id);
 
   Optional<Delivery> findByOrderId(UUID orderId);
-
-  Optional<Delivery> findByIdFetchShipments(UUID id);
 
   Optional<Shipment> findShipmentById(UUID shipmentId);
 

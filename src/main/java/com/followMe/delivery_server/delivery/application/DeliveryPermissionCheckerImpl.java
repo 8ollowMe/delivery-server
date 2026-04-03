@@ -1,7 +1,5 @@
 package com.followMe.delivery_server.delivery.application;
 
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
@@ -31,8 +29,7 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
     switch (user.role()) {
       case MASTER -> {}
       case HUB -> {
-        if (user.hubId() == null || !nodeIds.contains(user.hubId()))
-          throw new ForbiddenException();
+        if (user.hubId() == null || !nodeIds.contains(user.hubId())) throw new ForbiddenException();
       }
       case VENDOR -> {
         Shipment last = delivery.getShipments().getLast();
