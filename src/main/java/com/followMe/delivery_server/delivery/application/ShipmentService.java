@@ -45,4 +45,13 @@ public class ShipmentService {
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     shipment.updateShipmentStatus(status, user, permissionChecker);
   }
+	@Transactional
+	public void reassignDeliveryManager(UserContext user, UUID shipmentId,
+			ShipmentRequest.UpdateDeliveryManager request) {
+		Shipment shipment = deliveryRepository.findShipmentById(shipmentId)
+				.orElseThrow(ShipmentNotFoundException::new);
+		DeliveryManager newManager = assigner.getDeliveryManager(request.newManagerId(), shipment.getFrom()
+				.getId());
+		shipment.reassignDeliveryManager(user, newManager, permissionChecker);
+	}
 }
