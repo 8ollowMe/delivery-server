@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
     fallbackFactory = OrderClientFallbackFactory.class,
     primary = false)
 public interface OrderClient {
-  @PatchMapping("/internal/v1/orders/{orderId}/delivery ")
+  @PatchMapping("/internal/v1/orders/{orderId}/delivery")
   void deliveryManagerAssigned(
       @PathVariable UUID orderId, @RequestBody OrderRequest.DeliveryAssigned request);
 }

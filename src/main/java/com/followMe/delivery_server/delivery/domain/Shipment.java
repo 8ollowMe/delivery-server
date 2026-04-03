@@ -11,6 +11,9 @@ import com.followMe.delivery_server.delivery.domain.exception.InvalidShipmentSta
 import com.followMe.delivery_server.delivery.domain.exception.NodeTypeMismatchException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
+import com.followMe.delivery_server.delivery.infra.client.OrderClient;
+import com.followMe.delivery_server.delivery.infra.client.UserClient;
+import com.followMe.delivery_server.delivery.presentation.dto.OrderRequest;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -137,8 +140,13 @@ public class Shipment extends BaseAudit {
     }
   }
 
-  public void assignDeliveryManager(DeliveryManager deliveryManager) {
+  public void assignDeliveryManager(
+      DeliveryManager deliveryManager, UserClient userClient, OrderClient orderClient) {
     this.deliveryManager = deliveryManager;
+    userClient.updateDeliverySequence(deliveryManager.getId());
+    orderClient.deliveryManagerAssigned(
+        delivery.getOrderId().getValue(),
+        new OrderRequest.DeliveryAssigned(deliveryManager.getId()));
   }
 
   public void reassignDeliveryManager(

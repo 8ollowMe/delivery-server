@@ -1,11 +1,13 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
+import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.domain.DeliveryManagerInfo;
 import com.followMe.delivery_server.delivery.domain.UserInfo;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,4 +23,7 @@ public interface UserClient {
 
   @GetMapping("/internal/users/{userId}")
   UserInfo getUserInfo(@PathVariable UUID userId);
+
+  @GetMapping("/internal/users/{userId}/sequence/last")
+  ResponseEntity<ApiResponse> updateDeliverySequence(@PathVariable UUID userId);
 }

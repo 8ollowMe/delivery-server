@@ -12,6 +12,8 @@ import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssig
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
+import com.followMe.delivery_server.delivery.infra.client.OrderClient;
+import com.followMe.delivery_server.delivery.infra.client.UserClient;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class DeliveryService {
   private final OrderDeliveryAssigner orderDeliveryAssigner;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
+  private final UserClient userClient;
+  private final OrderClient orderClient;
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
@@ -36,7 +40,7 @@ public class DeliveryService {
     Shipment shipment = delivery.getShipments().getFirst();
     NodeType type = shipment.getTo().getType();
     DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
-    shipment.assignDeliveryManager(manager);
+    shipment.assignDeliveryManager(manager, userClient, orderClient);
     orderDeliveryAssigner.assignDeliveryToOrder(command.orderId(), manager.getId());
     deliveryRepository.save(delivery);
     return DeliveryResponse.DeliveryCreate.of(delivery, manager);
