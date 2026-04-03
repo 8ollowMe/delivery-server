@@ -5,12 +5,12 @@ import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.ShipmentService;
-import com.followMe.delivery_server.delivery.application.UserContext;
-import com.followMe.delivery_server.delivery.application.UserRole;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryListItemDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryResponseDto;
-import com.followMe.delivery_server.delivery.application.dto.DeliverySearchCondition;
-import com.followMe.delivery_server.delivery.application.dto.OrderCreateCommand;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
+import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
+import com.followMe.delivery_server.delivery.domain.UserContext;
+import com.followMe.delivery_server.delivery.domain.UserRole;
+import com.followMe.delivery_server.delivery.presentation.dto.DeliverySearchRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -38,30 +38,30 @@ public class DeliveryController {
   public ResponseEntity<ApiResponse> getDeliveries(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @ModelAttribute DeliverySearchCondition condition,
+      @ModelAttribute DeliverySearchRequest request,
       @ModelAttribute UserContext user) {
-    PageResponse<DeliveryListItemDto> response =
-        deliveryService.getDeliveries(user, PageRequest.of(page, size), condition);
+    PageResponse<DeliveryResponse.ListItem> response =
+        deliveryService.getDeliveries(user, PageRequest.of(page, size), request.toCondition());
     return ApiResponse.ok(response);
   }
 
   @PostMapping
-  public ResponseEntity<ApiResponse> createDelivery(@RequestBody OrderCreateCommand command) {
-    deliveryService.createDelivery(command);
+  public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create request) {
+    deliveryService.createDelivery(request);
     return ApiResponse.ok();
   }
 
   @GetMapping("/order/{orderId}")
   public ResponseEntity<ApiResponse> getDeliveryByOrderId(
       @PathVariable UUID orderId, @ModelAttribute UserContext user) {
-    DeliveryResponseDto response = deliveryService.getDeliveryByOrderId(user, orderId);
+    DeliveryResponse.Detail response = deliveryService.getDeliveryByOrderId(user, orderId);
     return ApiResponse.ok(response);
   }
 
   @GetMapping("/{deliveryId}")
   public ResponseEntity<ApiResponse> getDelivery(
       @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
-    DeliveryResponseDto response = deliveryService.getDelivery(user, deliveryId);
+    DeliveryResponse.Detail response = deliveryService.getDelivery(user, deliveryId);
     return ApiResponse.ok(response);
   }
 
@@ -82,7 +82,7 @@ public class DeliveryController {
   @GetMapping("/{deliveryId}/shipments")
   public ResponseEntity<ApiResponse> getShipmentsByDeliveryId(
       @PathVariable UUID deliveryId, @ModelAttribute UserContext user) {
-    List<DeliveryResponseDto.ShipmentResponse> response =
+    List<ShipmentResponse.Detail> response =
         shipmentService.getShipmentsByDeliveryId(user, deliveryId);
     return ApiResponse.ok(response);
   }

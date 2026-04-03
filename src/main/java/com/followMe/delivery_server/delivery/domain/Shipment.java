@@ -4,10 +4,11 @@ import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidNodeInformationException;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidShipmentStatusException;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.NodeTypeMismatchException;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.exception.InvalidNodeInformationException;
+import com.followMe.delivery_server.delivery.domain.exception.InvalidShipmentStatusException;
+import com.followMe.delivery_server.delivery.domain.exception.NodeTypeMismatchException;
+import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -165,7 +166,10 @@ public class Shipment extends BaseAudit {
     transitionTo(ShipmentStatus.CANCELLED);
   }
 
-  public void updateShipmentStatus(ShipmentStatus status) {
+  public void updateShipmentStatus(
+      ShipmentStatus status, UserContext user, DeliveryPermissionChecker permissionChecker) {
+
+    permissionChecker.checkShipmentStatusUpdateAccess(user, this);
     switch (status) {
       case SHIPPED -> this.ship();
 

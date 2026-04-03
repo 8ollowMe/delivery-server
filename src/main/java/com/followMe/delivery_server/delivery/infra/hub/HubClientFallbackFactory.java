@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.hub;
 
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubClientUnavailableException;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubRouteNotFoundException;
+import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.domain.exception.HubRouteNotFoundException;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
 import feign.FeignException;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class HubClientFallbackFactory implements FallbackFactory<HubClient> {
       @Override
       public HubRouteResponse getNodes(UUID sourceHubId, UUID vendorId) {
         log.error(
-            "Failed to get hub route for sourceHubId: {}, vendorId: {}. Cause: {}",
+            "Failed to get hub route for hubId: {}, vendorId: {}. Cause: {}",
             sourceHubId,
             vendorId,
             cause.getMessage());

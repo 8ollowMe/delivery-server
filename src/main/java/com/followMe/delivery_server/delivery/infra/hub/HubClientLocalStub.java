@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.hub;
 
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubNodeInfo;
 import com.followMe.delivery_server.delivery.infra.hub.dto.HubRouteResponse;
 import java.util.List;
@@ -22,7 +22,7 @@ public class HubClientLocalStub implements HubClient {
 
   @Override
   public HubRouteResponse getNodes(UUID sourceHubId, UUID vendorId) {
-    log.info("[LocalStub] HubClient.getNodes sourceHubId={} vendorId={}", sourceHubId, vendorId);
+    log.info("[LocalStub] HubClient.getNodes hubId={} vendorId={}", sourceHubId, vendorId);
     if (sourceHubId.toString().endsWith(UNKNOWN_SUFFIX)
         || vendorId.toString().endsWith(UNKNOWN_SUFFIX)) {
       throw new HubClientUnavailableException();

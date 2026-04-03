@@ -2,18 +2,33 @@ package com.followMe.delivery_server.delivery.application.dto;
 
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
+import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-public interface DeliveryResponse {
+public class DeliveryResponse {
 
-  UUID id();
+  public record Detail(
+      UUID id,
+      UUID orderId,
+      DeliveryStatus status,
+      List<ShipmentResponse.Detail> shipments,
+      LocalDateTime createdAt) {}
 
-  UUID orderId();
+  public record ListItem(
+      UUID id,
+      UUID orderId,
+      DeliveryStatus status,
+      NodeInfo fromHub,
+      NodeInfo toVendor,
+      int totalShipments,
+      int completedShipments,
+      NodeInfo latestProgressedNode,
+      ShipmentStatus currentProgressStatus,
+      LocalDateTime createdAt) {}
 
-  DeliveryStatus status();
+  public record NodeInfo(UUID id, NodeType type, String name) {}
 
-  LocalDateTime createdAt();
-
-  record NodeResponse(UUID id, NodeType type, String name) {}
+  public record ManagerInfo(UUID id, String name) {}
 }

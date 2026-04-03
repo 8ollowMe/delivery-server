@@ -3,7 +3,8 @@ package com.followMe.delivery_server.delivery.domain;
 import com.followMe.common.entity.BaseAudit;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
-import com.followMe.delivery_server.delivery.domain.exception.DeliveryException.InvalidDeliveryStatusException;
+import com.followMe.delivery_server.delivery.domain.exception.InvalidDeliveryStatusException;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,8 @@ public class Delivery extends BaseAudit {
     return DeliveryStatus.READY;
   }
 
-  public void cancel() {
+  public void cancel(UserContext user, DeliveryPermissionChecker permissionChecker) {
+    permissionChecker.checkCancelAccess(user, this);
     DeliveryStatus currentStatus = this.getDeliveryStatus();
     if (currentStatus != DeliveryStatus.READY && currentStatus != DeliveryStatus.FAILED) {
       throw new InvalidDeliveryStatusException();
@@ -68,8 +70,9 @@ public class Delivery extends BaseAudit {
     this.shipments.forEach(Shipment::cancel);
   }
 
-  public void softDelete(UUID deletedBy) {
-    super.softDelete(deletedBy);
-    this.shipments.forEach(shipment -> shipment.softDelete(deletedBy));
+  public void softDelete(UserContext user, DeliveryPermissionChecker permissionChecker) {
+    permissionChecker.checkDeleteAccess(user, this);
+    super.softDelete(user.userId());
+    this.shipments.forEach(shipment -> shipment.softDelete(user.userId()));
   }
 }

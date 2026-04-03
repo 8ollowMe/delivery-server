@@ -1,5 +1,7 @@
-package com.followMe.delivery_server.delivery.application.dto;
+package com.followMe.delivery_server.delivery.domain;
 
+import com.followMe.common.exception.BusinessException;
+import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import java.util.UUID;
@@ -19,4 +21,13 @@ public class DeliverySearchCondition {
   private String keyword;
   private DeliverySortBy sortBy = DeliverySortBy.CREATED_AT;
   private Sort.Direction direction = Sort.Direction.DESC;
+
+  public void applyPermission(UserContext user) {
+    switch (user.role()) {
+      case HUB -> this.hubId = user.hubId();
+      case DELIVERY -> this.deliveryManagerId = user.userId();
+      case MASTER, VENDOR -> {}
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
+  }
 }
