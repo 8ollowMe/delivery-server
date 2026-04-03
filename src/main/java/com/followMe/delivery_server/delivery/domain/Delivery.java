@@ -5,6 +5,7 @@ import com.followMe.common.exception.BusinessException;
 import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
+import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;
 import com.followMe.delivery_server.delivery.domain.exception.InvalidDeliveryStatusException;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
@@ -73,7 +74,7 @@ public class Delivery extends BaseAudit {
                     s ->
                         s.getDeliveryManager() != null
                             && s.getDeliveryManager().getId().equals(user.userId()));
-        if (!isManager) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        if (!isManager) throw new ForbiddenException();
       }
       case HUB -> {
         boolean hasHub =
@@ -82,9 +83,9 @@ public class Delivery extends BaseAudit {
                     s ->
                         (s.getFrom() != null && s.getFrom().getId().equals(user.hubId()))
                             || (s.getTo() != null && s.getTo().getId().equals(user.hubId())));
-        if (!hasHub) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        if (!hasHub) throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 

@@ -1,7 +1,10 @@
 package com.followMe.delivery_server.delivery.domain.exception;
 
-public class ForbiddenExeption extends RuntimeException {
-  public ForbiddenExeption(String message) {
-    super(message);
-  }
+import com.followMe.common.exception.BusinessException;
+import com.followMe.common.exception.CommonErrorCode;
+
+public class ForbiddenException extends BusinessException {
+	public ForbiddenException() {
+		super(CommonErrorCode.FORBIDDEN);
+	}
 }

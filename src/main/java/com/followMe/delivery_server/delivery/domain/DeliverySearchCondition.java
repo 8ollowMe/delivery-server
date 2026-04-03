@@ -5,6 +5,8 @@ import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import java.util.UUID;
+
+import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Sort;
@@ -27,7 +29,7 @@ public class DeliverySearchCondition {
       case HUB -> this.hubId = user.hubId();
       case DELIVERY -> this.deliveryManagerId = user.userId();
       case MASTER, VENDOR -> {}
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 }
