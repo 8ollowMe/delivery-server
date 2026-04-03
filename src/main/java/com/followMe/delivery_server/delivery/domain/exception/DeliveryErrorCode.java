@@ -22,6 +22,10 @@ public enum DeliveryErrorCode implements ErrorCode {
 
   HUB_CLIENT_UNAVAILABLE("HC001", "Hub 서비스를 일시적으로 사용할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE),
   HUB_ROUTE_NOT_FOUND("HC002", "Hub 경로 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+  USER_CLIENT_UNAVAILABLE("UC001", "User 서비스를 일시적으로 사용할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE),
+
+  ORDER_CLIENT_UNAVAILABLE("OC001", "Order 서비스를 일시적으로 사용할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE)
   ;
 
   private final String code;

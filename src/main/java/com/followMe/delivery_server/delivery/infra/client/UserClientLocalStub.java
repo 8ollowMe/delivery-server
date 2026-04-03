@@ -1,5 +1,6 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
+import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.domain.DeliveryManagerInfo;
 import com.followMe.delivery_server.delivery.domain.UserInfo;
 import com.followMe.delivery_server.delivery.domain.UserRole;
@@ -7,9 +8,12 @@ import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
 import java.util.List;
 import java.util.UUID;
+
+import com.followMe.delivery_server.delivery.domain.exception.UserClientUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -44,8 +48,18 @@ public class UserClientLocalStub implements UserClient {
   public UserInfo getUserInfo(UUID userId) {
     log.debug("[LocalStub] UserClient.getUserInfo userId={}", userId);
     if (userId.equals(UNKNOWN_USER_ID)) {
-      throw new HubClientUnavailableException();
+      throw new UserClientUnavailableException();
     }
     return new UserInfo(userId, "테스트 사용자", UUID.randomUUID(), UUID.randomUUID(), UserRole.MASTER);
+  }
+
+  @Override
+  public ResponseEntity<ApiResponse> updateDeliverySequence(UUID userId) {
+    log.debug("[LocalStub] UserClient.updateDeliverySequence userId={}", userId);
+    if (userId.equals(UNKNOWN_USER_ID)) {
+      throw new UserClientUnavailableException();
+    }
+    return ResponseEntity.ok(ApiResponse.ok()
+            .getBody());
   }
 }

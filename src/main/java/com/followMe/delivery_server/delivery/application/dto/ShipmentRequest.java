@@ -7,5 +7,5 @@ import java.util.UUID;
 public class ShipmentRequest {
   public record UpdateStatus(@NotNull ShipmentStatus status) {}
 
-  public record UpdateDeliveryManager(UUID newManagerId) {}
+  public record UpdateDeliveryManager(@NotNull UUID newManagerId) {}
 }

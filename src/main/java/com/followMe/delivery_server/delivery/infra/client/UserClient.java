@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
     name = "user-server",
-    fallbackFactory = HubClientFallbackFactory.class,
+    fallbackFactory = UserClientFallbackFactory.class,
     primary = false)
 public interface UserClient {
   @GetMapping("/internal/users/delivery-managers")

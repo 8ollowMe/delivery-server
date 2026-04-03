@@ -33,8 +33,8 @@ public class DeliveryResponse {
   public record NodeInfo(UUID id, NodeType type, String name) {}
 
   public record ManagerInfo(UUID id, String name) {
-    public void of(DeliveryManager deliveryManager) {
-      new ManagerInfo(deliveryManager.getId(), deliveryManager.getName());
+    public static ManagerInfo of(DeliveryManager deliveryManager) {
+      return new ManagerInfo(deliveryManager.getId(), deliveryManager.getName());
     }
   }
 

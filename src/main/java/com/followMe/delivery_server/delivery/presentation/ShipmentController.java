@@ -48,7 +48,7 @@ public class ShipmentController {
   public ResponseEntity<ApiResponse> reassignDeliveryManager(
       @PathVariable UUID shipmentId,
       @ModelAttribute UserContext user,
-      @RequestBody ShipmentRequest.UpdateDeliveryManager request) {
+      @RequestBody @Valid ShipmentRequest.UpdateDeliveryManager request) {
     shipmentService.reassignDeliveryManager(user, shipmentId, request);
     return ApiResponse.ok();
   }

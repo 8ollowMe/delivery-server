@@ -27,7 +27,6 @@ public class DeliveryService {
   private final DeliveryRepository deliveryRepository;
   private final HubRouteInfo hubRouteInfo;
   private final DeliveryManagerAssigner assigner;
-  private final OrderDeliveryAssigner orderDeliveryAssigner;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
   private final UserClient userClient;
@@ -41,7 +40,6 @@ public class DeliveryService {
     NodeType type = shipment.getTo().getType();
     DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
     shipment.assignDeliveryManager(manager, userClient, orderClient);
-    orderDeliveryAssigner.assignDeliveryToOrder(command.orderId(), manager.getId());
     deliveryRepository.save(delivery);
     return DeliveryResponse.DeliveryCreate.of(delivery, manager);
   }
