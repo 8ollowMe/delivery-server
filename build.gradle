@@ -87,15 +87,15 @@ jooq {
 			generationTool {
 				jdbc {
 					driver = 'org.postgresql.Driver'
-					url = 'jdbc:postgresql://localhost:5432/delivery_db'
-					user = 'postgres'
-					password = 'password'
+					url = 'jdbc:postgresql://localhost:5432/followme'
+					user = 'followme'
+					password = 'followme'
 				}
 				generator {
 					name = 'org.jooq.codegen.DefaultGenerator'
 					database {
 						name = 'org.jooq.meta.postgres.PostgresDatabase'
-						inputSchema = 'public'
+						inputSchema = 'delivery'
 						includes = 'p_delivery|p_shipment'
 					}
 					target {

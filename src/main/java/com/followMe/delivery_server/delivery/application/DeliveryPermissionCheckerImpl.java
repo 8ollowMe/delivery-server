@@ -19,11 +19,11 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
   private static void checkReadAccess(UserContext user, Set<UUID> nodeIds, Set<UUID> managerIds) {
     switch (user.role()) {
       case MASTER, VENDOR -> {}
-      case DELIVERY_MANAGER -> {
+      case DELIVERY -> {
         if (!managerIds.contains(user.userId()))
           throw new BusinessException(CommonErrorCode.FORBIDDEN);
       }
-      case HUB_MANAGER -> {
+      case HUB -> {
         if (!nodeIds.contains(user.hubId())) throw new BusinessException(CommonErrorCode.FORBIDDEN);
       }
       default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
@@ -56,7 +56,7 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
     Set<UUID> nodeIds = nodeIdsFrom(delivery.getShipments());
     switch (user.role()) {
       case MASTER -> {}
-      case HUB_MANAGER -> {
+      case HUB -> {
         if (user.hubId() == null || !nodeIds.contains(user.hubId()))
           throw new BusinessException(CommonErrorCode.FORBIDDEN);
       }
@@ -73,7 +73,7 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
   public void checkDeleteAccess(UserContext user, Delivery delivery) {
     switch (user.role()) {
       case MASTER -> {}
-      case HUB_MANAGER -> {
+      case HUB -> {
         Shipment first = delivery.getShipments().getFirst();
         if (user.hubId() == null || !user.hubId().equals(first.getFrom().getId()))
           throw new BusinessException(CommonErrorCode.FORBIDDEN);
@@ -84,19 +84,14 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
 
   @Override
   public void checkListAccess(UserContext user, DeliverySearchCondition condition) {
-    switch (user.role()) {
-      case HUB_MANAGER -> condition.setHubId(user.hubId());
-      case DELIVERY_MANAGER -> condition.setDeliveryManagerId(user.userId());
-      case MASTER, VENDOR -> {}
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
-    }
+    condition.applyPermission(user);
   }
 
   @Override
   public void checkShipmentStatusUpdateAccess(UserContext user, Shipment shipment) {
     switch (user.role()) {
       case MASTER -> {}
-      case DELIVERY_MANAGER -> {
+      case DELIVERY -> {
         if (shipment.getDeliveryManager() == null
             || !shipment.getDeliveryManager().getId().equals(user.userId()))
           throw new BusinessException(CommonErrorCode.FORBIDDEN);

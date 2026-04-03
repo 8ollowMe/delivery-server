@@ -2,12 +2,13 @@ spring:
   application:
     name: delivery-server
 
+
   config:
     import: "optional:configserver:"
 
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://localhost:13100
       fail-fast: false
 
   datasource:
@@ -54,8 +55,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: false
-    fetch-registry: false
+    register-with-eureka: true
+    fetch-registry: true
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

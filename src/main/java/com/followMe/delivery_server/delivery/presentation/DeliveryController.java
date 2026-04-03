@@ -8,9 +8,9 @@ import com.followMe.delivery_server.delivery.application.ShipmentService;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
-import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.UserRole;
+import com.followMe.delivery_server.delivery.presentation.dto.DeliverySearchRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +38,10 @@ public class DeliveryController {
   public ResponseEntity<ApiResponse> getDeliveries(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @ModelAttribute DeliverySearchCondition condition,
+      @ModelAttribute DeliverySearchRequest request,
       @ModelAttribute UserContext user) {
     PageResponse<DeliveryResponse.ListItem> response =
-        deliveryService.getDeliveries(user, PageRequest.of(page, size), condition);
+        deliveryService.getDeliveries(user, PageRequest.of(page, size), request.toCondition());
     return ApiResponse.ok(response);
   }
 
