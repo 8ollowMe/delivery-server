@@ -3,7 +3,6 @@ package com.followMe.delivery_server.delivery.application;
 import com.followMe.common.exception.BusinessException;
 import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.Delivery;
-import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
@@ -16,20 +15,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker {
 
-  private static void checkReadAccess(UserContext user, Set<UUID> nodeIds, Set<UUID> managerIds) {
-    switch (user.role()) {
-      case MASTER, VENDOR -> {}
-      case DELIVERY -> {
-        if (!managerIds.contains(user.userId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
-      }
-      case HUB -> {
-        if (!nodeIds.contains(user.hubId())) throw new BusinessException(CommonErrorCode.FORBIDDEN);
-      }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
-    }
-  }
-
   private static Set<UUID> nodeIdsFrom(List<Shipment> shipments) {
     Set<UUID> nodeIds = new HashSet<>();
     for (var s : shipments) {
@@ -37,18 +22,6 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
       if (s.getTo() != null) nodeIds.add(s.getTo().getId());
     }
     return nodeIds;
-  }
-
-  @Override
-  public void checkReadAccess(UserContext user, List<Shipment> shipments) {
-    Set<UUID> nodeIds = new HashSet<>();
-    Set<UUID> managerIds = new HashSet<>();
-    for (var s : shipments) {
-      if (s.getFrom() != null) nodeIds.add(s.getFrom().getId());
-      if (s.getTo() != null) nodeIds.add(s.getTo().getId());
-      if (s.getDeliveryManager() != null) managerIds.add(s.getDeliveryManager().getId());
-    }
-    checkReadAccess(user, nodeIds, managerIds);
   }
 
   @Override
@@ -83,17 +56,24 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
   }
 
   @Override
-  public void checkListAccess(UserContext user, DeliverySearchCondition condition) {
-    condition.applyPermission(user);
-  }
-
-  @Override
   public void checkShipmentStatusUpdateAccess(UserContext user, Shipment shipment) {
     switch (user.role()) {
       case MASTER -> {}
       case DELIVERY -> {
         if (shipment.getDeliveryManager() == null
             || !shipment.getDeliveryManager().getId().equals(user.userId()))
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
+  }
+
+  @Override
+  public void checkShipmentManagerReassignAccess(UserContext user, Shipment shipment) {
+    switch (user.role()) {
+      case MASTER -> {}
+      case HUB -> {
+        if (user.hubId() == null || !user.hubId().equals(shipment.getFrom().getId()))
           throw new BusinessException(CommonErrorCode.FORBIDDEN);
       }
       default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);

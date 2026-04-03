@@ -3,7 +3,6 @@ package com.followMe.delivery_server.delivery.infra.client;
 import com.followMe.delivery_server.delivery.domain.*;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
-import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryManagerNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
