@@ -208,14 +208,23 @@ X-User-Role: MASTER
 
 ### ===== 배송 생성 =====
 
-### 배송 생성 (local 프로파일 - HubClientLocalStub 사용)
+### [Setup] 배송 생성 전 초기화
+POST http://localhost:8081/internal/test/reset
+
+> {%
+    client.test("Setup: 데이터 초기화", function() {
+        client.assert(response.status === 200, "초기화 실패: " + response.status);
+    });
+%}
+
+### 배송 생성 (local 프로파일 - HubClientLocalStub + UserClientLocalStub 사용)
 POST http://localhost:8081/api/v1/deliveries
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
 X-User-Role: MASTER
 
 {
-  "orderId": "bbbbbbbb-0000-0000-0000-000000000002",
+  "orderId": "bbbbbbbb-0000-0000-0000-000000000099",
   "sourceHubId": "dddddddd-0000-0000-0000-000000000001",
   "vendorId": "dddddddd-0000-0000-0000-000000000003"
 }
@@ -225,6 +234,26 @@ X-User-Role: MASTER
     client.test("배송 생성", function() {
         client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
         client.assert(response.body.success === true, "success=true 기대");
+    });
+%}
+
+### 배송 생성 후 구간별 담당자 배정 확인 - orderId로 조회
+GET http://localhost:8081/api/v1/deliveries/order/bbbbbbbb-0000-0000-0000-000000000099
+X-User-Id: cccccccc-0000-0000-0000-000000000001
+X-User-Role: MASTER
+
+> {%
+    client.log(JSON.stringify(response.body, null, 2));
+    client.test("배송 담당자 배정 확인", function() {
+        client.assert(response.status === 200, "status 200 기대, 실제: " + response.status);
+        client.assert(response.body.success === true, "success=true 기대");
+        var shipments = response.body.data.shipments;
+        client.assert(shipments.length > 0, "구간이 1개 이상 기대");
+        client.assert(shipments[0].deliveryManager !== null, "첫 번째 구간 담당자 배정 기대");
+        client.assert(shipments[0].deliveryManager.name !== null, "첫 번째 구간 담당자 이름 존재 기대");
+        for (var i = 1; i < shipments.length; i++) {
+            client.assert(shipments[i].deliveryManager === null, "구간 " + (i+1) + "은 미배정 기대");
+        }
     });
 %}
 
