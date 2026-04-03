@@ -2,17 +2,16 @@ package com.followMe.delivery_server.delivery.application;
 
 import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.pagination.PageResponse;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryCreateResponse;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
-import com.followMe.delivery_server.delivery.domain.Delivery;
-import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
-import com.followMe.delivery_server.delivery.domain.Node;
-import com.followMe.delivery_server.delivery.domain.UserContext;
+import com.followMe.delivery_server.delivery.domain.*;
+import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
+import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,8 @@ public class DeliveryService {
   private final HubRouteInfo hubRouteInfo;
   private final DeliveryManagerAssigner assigner;
   private final OrderDeliveryAssigner orderDeliveryAssigner;
-    private final DeliveryQueryPort deliveryQueryPort;
-    private final DeliveryPermissionChecker permissionChecker;
+  private final DeliveryQueryPort deliveryQueryPort;
+  private final DeliveryPermissionChecker permissionChecker;
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
@@ -36,8 +35,7 @@ public class DeliveryService {
     Delivery delivery = Delivery.create(command.orderId(), nodes);
     Shipment shipment = delivery.getShipments().getFirst();
     NodeType type = shipment.getTo().getType();
-    DeliveryManager manager =
-        assigner.assignDeliveryManager(command.sourceHubId(), type);
+    DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
     shipment.assignDeliveryManager(manager);
     orderDeliveryAssigner.assignDeliveryToOrder(command.orderId(), manager.getId());
     deliveryRepository.save(delivery);
@@ -48,14 +46,14 @@ public class DeliveryService {
   public DeliveryResponse.Detail getDelivery(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    permissionChecker.checkReadAccess(user, delivery.getShipments());
+    delivery.checkReadAccess(user);
     return deliveryQueryPort.findDeliveryById(deliveryId);
   }
 
   @Transactional(readOnly = true)
   public PageResponse<DeliveryResponse.ListItem> getDeliveries(
       UserContext user, PageRequest pageRequest, DeliverySearchCondition condition) {
-    permissionChecker.checkListAccess(user, condition);
+    condition.applyPermission(user);
     return deliveryQueryPort.findDeliveries(pageRequest, condition);
   }
 
@@ -63,7 +61,7 @@ public class DeliveryService {
   public DeliveryResponse.Detail getDeliveryByOrderId(UserContext user, UUID orderId) {
     Delivery delivery =
         deliveryRepository.findByOrderId(orderId).orElseThrow(DeliveryNotFoundException::new);
-    permissionChecker.checkReadAccess(user, delivery.getShipments());
+    delivery.checkReadAccess(user);
     return deliveryQueryPort.findDeliveryByOrderId(orderId);
   }
 

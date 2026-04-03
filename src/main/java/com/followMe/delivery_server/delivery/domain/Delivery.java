@@ -1,6 +1,8 @@
 package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
+import com.followMe.common.exception.BusinessException;
+import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.InvalidDeliveryStatusException;
@@ -59,6 +61,31 @@ public class Delivery extends BaseAudit {
       return DeliveryStatus.CANCELLED;
     }
     return DeliveryStatus.READY;
+  }
+
+  public void checkReadAccess(UserContext user) {
+    switch (user.role()) {
+      case MASTER, VENDOR -> {}
+      case DELIVERY -> {
+        boolean isManager =
+            shipments.stream()
+                .anyMatch(
+                    s ->
+                        s.getDeliveryManager() != null
+                            && s.getDeliveryManager().getId().equals(user.userId()));
+        if (!isManager) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      }
+      case HUB -> {
+        boolean hasHub =
+            shipments.stream()
+                .anyMatch(
+                    s ->
+                        (s.getFrom() != null && s.getFrom().getId().equals(user.hubId()))
+                            || (s.getTo() != null && s.getTo().getId().equals(user.hubId())));
+        if (!hasHub) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
   }
 
   public void cancel(UserContext user, DeliveryPermissionChecker permissionChecker) {
