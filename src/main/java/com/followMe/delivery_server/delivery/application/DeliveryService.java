@@ -24,16 +24,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
-  private final DeliveryQueryPort deliveryQueryPort;
   private final HubRouteInfo hubRouteInfo;
-  private final DeliveryPermissionChecker permissionChecker;
+  private final DeliveryManagerAssigner assigner;
+  private final OrderDeliveryAssigner orderDeliveryAssigner;
+    private final DeliveryQueryPort deliveryQueryPort;
+    private final DeliveryPermissionChecker permissionChecker;
 
   @Transactional
-  public DeliveryCreateResponse createDelivery(DeliveryRequest.Create command) {
+  public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
     List<Node> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
     Delivery delivery = Delivery.create(command.orderId(), nodes);
+    Shipment shipment = delivery.getShipments().getFirst();
+    NodeType type = shipment.getTo().getType();
+    DeliveryManager manager =
+        assigner.assignDeliveryManager(command.sourceHubId(), type);
+    shipment.assignDeliveryManager(manager);
+    orderDeliveryAssigner.assignDeliveryToOrder(command.orderId(), manager.getId());
     deliveryRepository.save(delivery);
-    return new DeliveryCreateResponse(delivery.getId());
+    return DeliveryResponse.DeliveryCreate.of(delivery, manager);
   }
 
   @Transactional(readOnly = true)

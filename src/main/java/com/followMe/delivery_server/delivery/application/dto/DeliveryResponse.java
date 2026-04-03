@@ -31,4 +31,21 @@ public class DeliveryResponse {
   public record NodeInfo(UUID id, NodeType type, String name) {}
 
   public record ManagerInfo(UUID id, String name) {}
+	public record DeliveryCreate(UUID deliveryId, List<NodeInfo> nodes, ManagerInfo managerInfo) {
+
+		public static DeliveryCreate of(Delivery delivery, DeliveryManager manager) {
+			List<NodeInfo> nodeInfoList = delivery.getShipments()
+					.stream()
+					.map(shipment -> new NodeInfo(shipment.getTo()
+							.getId(), shipment.getTo()
+							.getType(), shipment.getTo()
+							.getName()))
+					.toList();
+
+			ManagerInfo managerInfo = new ManagerInfo(manager.getId(), manager.getName());
+
+			return new DeliveryCreate(delivery.getId(), nodeInfoList, managerInfo);
+
+		}
+	}
 }
