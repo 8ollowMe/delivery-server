@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
+import com.followMe.delivery_server.delivery.application.dto.OrderRequest;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
-import com.followMe.delivery_server.delivery.presentation.dto.OrderRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

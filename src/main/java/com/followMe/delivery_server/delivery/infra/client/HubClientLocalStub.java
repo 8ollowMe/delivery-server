@@ -1,9 +1,9 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
-import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
 import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import com.followMe.delivery_server.delivery.infra.client.dto.HubRouteResponse;
+import com.followMe.delivery_server.delivery.infra.exception.HubClientUnavailableException;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

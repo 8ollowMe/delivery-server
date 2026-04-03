@@ -12,7 +12,6 @@ import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssig
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
-import com.followMe.delivery_server.delivery.infra.client.OrderClient;
 import com.followMe.delivery_server.delivery.infra.client.UserClient;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +29,7 @@ public class DeliveryService {
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
   private final UserClient userClient;
-  private final OrderClient orderClient;
+  private final OrderDeliveryAssigner orderDeliveryAssigner;
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
@@ -39,7 +38,9 @@ public class DeliveryService {
     Shipment shipment = delivery.getShipments().getFirst();
     NodeType type = shipment.getTo().getType();
     DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
-    shipment.assignDeliveryManager(manager, userClient, orderClient);
+    shipment.assignDeliveryManager(manager);
+    userClient.updateDeliverySequence(manager.getId());
+    orderDeliveryAssigner.assignDeliveryToOrder(delivery.getOrderId().getValue(), manager.getId());
     deliveryRepository.save(delivery);
     return DeliveryResponse.DeliveryCreate.of(delivery, manager);
   }

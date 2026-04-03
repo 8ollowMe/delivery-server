@@ -5,11 +5,10 @@ import com.followMe.delivery_server.delivery.domain.DeliveryManagerInfo;
 import com.followMe.delivery_server.delivery.domain.UserInfo;
 import com.followMe.delivery_server.delivery.domain.UserRole;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
-import com.followMe.delivery_server.delivery.domain.exception.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.infra.exception.HubClientUnavailableException;
+import com.followMe.delivery_server.delivery.infra.exception.UserClientUnavailableException;
 import java.util.List;
 import java.util.UUID;
-
-import com.followMe.delivery_server.delivery.domain.exception.UserClientUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -59,7 +58,6 @@ public class UserClientLocalStub implements UserClient {
     if (userId.equals(UNKNOWN_USER_ID)) {
       throw new UserClientUnavailableException();
     }
-    return ResponseEntity.ok(ApiResponse.ok()
-            .getBody());
+    return ResponseEntity.ok(ApiResponse.ok().getBody());
   }
 }
