@@ -3,7 +3,6 @@ package com.followMe.delivery_server.delivery.infra.client;
 import com.followMe.delivery_server.delivery.domain.DeliveryManagerInfo;
 import com.followMe.delivery_server.delivery.domain.UserInfo;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
-import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryManagerAssignException;
 import java.util.List;
 import java.util.UUID;

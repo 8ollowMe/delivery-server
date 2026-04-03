@@ -1,5 +1,7 @@
 package com.followMe.delivery_server.delivery.application.dto;
 
+import com.followMe.delivery_server.delivery.domain.Delivery;
+import com.followMe.delivery_server.delivery.domain.DeliveryManager;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
@@ -30,22 +32,28 @@ public class DeliveryResponse {
 
   public record NodeInfo(UUID id, NodeType type, String name) {}
 
-  public record ManagerInfo(UUID id, String name) {}
-	public record DeliveryCreate(UUID deliveryId, List<NodeInfo> nodes, ManagerInfo managerInfo) {
+  public record ManagerInfo(UUID id, String name) {
+    public void of(DeliveryManager deliveryManager) {
+      new ManagerInfo(deliveryManager.getId(), deliveryManager.getName());
+    }
+  }
 
-		public static DeliveryCreate of(Delivery delivery, DeliveryManager manager) {
-			List<NodeInfo> nodeInfoList = delivery.getShipments()
-					.stream()
-					.map(shipment -> new NodeInfo(shipment.getTo()
-							.getId(), shipment.getTo()
-							.getType(), shipment.getTo()
-							.getName()))
-					.toList();
+  public record DeliveryCreate(UUID deliveryId, List<NodeInfo> nodes, ManagerInfo managerInfo) {
 
-			ManagerInfo managerInfo = new ManagerInfo(manager.getId(), manager.getName());
+    public static DeliveryCreate of(Delivery delivery, DeliveryManager manager) {
+      List<NodeInfo> nodeInfoList =
+          delivery.getShipments().stream()
+              .map(
+                  shipment ->
+                      new NodeInfo(
+                          shipment.getTo().getId(),
+                          shipment.getTo().getType(),
+                          shipment.getTo().getName()))
+              .toList();
 
-			return new DeliveryCreate(delivery.getId(), nodeInfoList, managerInfo);
+      ManagerInfo managerInfo = new ManagerInfo(manager.getId(), manager.getName());
 
-		}
-	}
+      return new DeliveryCreate(delivery.getId(), nodeInfoList, managerInfo);
+    }
+  }
 }
