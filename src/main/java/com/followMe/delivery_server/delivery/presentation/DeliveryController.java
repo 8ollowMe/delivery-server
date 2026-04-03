@@ -10,7 +10,7 @@ import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.UserRole;
-import com.followMe.delivery_server.delivery.presentation.dto.DeliverySearchRequest;
+import com.followMe.delivery_server.delivery.application.dto.DeliverySearchRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -45,11 +45,6 @@ public class DeliveryController {
     return ApiResponse.ok(response);
   }
 
-  @PostMapping
-  public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create request) {
-    deliveryService.createDelivery(request);
-    return ApiResponse.ok();
-  }
 
   @GetMapping("/order/{orderId}")
   public ResponseEntity<ApiResponse> getDeliveryByOrderId(
