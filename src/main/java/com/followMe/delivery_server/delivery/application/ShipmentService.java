@@ -1,6 +1,5 @@
 package com.followMe.delivery_server.delivery.application;
 
-import com.followMe.common.event.Events;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentRequest;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.Delivery;

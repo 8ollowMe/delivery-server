@@ -24,6 +24,9 @@ spring:
     config:
       uri: http://localhost:13100
       fail-fast: false
+    openfeign:
+      okhttp:
+        enabled: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/followme

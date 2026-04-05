@@ -18,6 +18,7 @@ public class DeliveryCompleted extends BaseEvent {
   }
 
   public static DeliveryCompleted of(Delivery delivery) {
-    return new DeliveryCompleted(delivery.getId(), new Payload(delivery.getOrderId().getValue()));
+    UUID orderId = delivery.getOrderId() != null ? delivery.getOrderId().getValue() : null;
+    return new DeliveryCompleted(delivery.getId(), new Payload(orderId));
   }
 }
