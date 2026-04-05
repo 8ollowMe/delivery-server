@@ -2,10 +2,12 @@ package com.followMe.delivery_server.delivery.application.dto;
 
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.DeliveryManager;
+import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,22 +40,17 @@ public class DeliveryResponse {
     }
   }
 
-  public record DeliveryCreate(UUID deliveryId, List<NodeInfo> nodes, ManagerInfo managerInfo) {
+  public record DeliveryCreate(
+      UUID deliveryId, List<String> waypoints, UUID deliveryManagerId, String deliveryManagerName) {
 
     public static DeliveryCreate of(Delivery delivery, DeliveryManager manager) {
-      List<NodeInfo> nodeInfoList =
-          delivery.getShipments().stream()
-              .map(
-                  shipment ->
-                      new NodeInfo(
-                          shipment.getTo().getId(),
-                          shipment.getTo().getType(),
-                          shipment.getTo().getName()))
-              .toList();
+      List<String> waypoints = new ArrayList<>();
+      for (Shipment shipment : delivery.getShipments()) {
+        if (shipment.getTo().getType() != NodeType.VENDOR)
+          waypoints.add(shipment.getTo().getName());
+      }
 
-      ManagerInfo managerInfo = new ManagerInfo(manager.getId(), manager.getName());
-
-      return new DeliveryCreate(delivery.getId(), nodeInfoList, managerInfo);
+      return new DeliveryCreate(delivery.getId(), waypoints, manager.getId(), manager.getName());
     }
   }
 }
