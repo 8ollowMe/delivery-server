@@ -64,6 +64,9 @@ dependencies {
 
 	implementation 'com.followMe:common-lib:1.0.7'
 	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 
 	jooqGenerator 'org.postgresql:postgresql'
 	jooqGenerator 'org.jooq:jooq:3.19.30'

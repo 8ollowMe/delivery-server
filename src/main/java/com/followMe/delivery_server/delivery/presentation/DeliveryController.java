@@ -27,7 +27,7 @@ public class DeliveryController {
   @ModelAttribute
   public UserContext userContext(
       @RequestHeader("X-User-Id") UUID userId,
-      @RequestHeader("X-User-Role") UserRole role,
+      @RequestHeader("X-Role") UserRole role,
       @RequestHeader(value = "X-Hub-Id", required = false) UUID hubId,
       @RequestHeader(value = "X-Vendor-Id", required = false) UUID vendorId) {
     return new UserContext(userId, role, hubId, vendorId);

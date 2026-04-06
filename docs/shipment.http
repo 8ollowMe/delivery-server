@@ -12,7 +12,7 @@ POST http://localhost:8081/internal/test/reset
 ### 구간 목록 (마스터) - 배송1 (서울→부산→부산업체)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/shipments
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -26,7 +26,7 @@ X-User-Role: MASTER
 ### 구간 목록 (허브 관리자 - 서울 허브, 배송1에 포함)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/shipments
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
@@ -40,7 +40,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 ### 구간 목록 (배송 담당자 - 홍길동, 배송3 담당)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000003/shipments
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -53,7 +53,7 @@ X-User-Role: DELIVERY
 ### [실패 예상] 허브 관리자 - 관련 없는 허브
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/shipments
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -66,7 +66,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 배송 담당자 - 본인 미배정 배송 (배송1은 담당자 없음)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/shipments
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -78,7 +78,7 @@ X-User-Role: DELIVERY
 ### [실패 예상] 존재하지 않는 배송 ID
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099/shipments
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -92,7 +92,7 @@ X-User-Role: MASTER
 ### 단건 조회 (마스터) - 배송3 seq2 홍길동 IN_TRANSIT
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -105,7 +105,7 @@ X-User-Role: MASTER
 ### 단건 조회 (배송 담당자 - 홍길동, 본인 배정)
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -118,7 +118,7 @@ X-User-Role: DELIVERY
 ### 단건 조회 (허브 관리자 - 부산 허브 포함 구간)
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000002
 
 > {%
@@ -132,7 +132,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000002
 ### [실패 예상] 배송 담당자 - 타인 배정 구간 (김철수가 홍길동 구간 접근)
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005
 X-User-Id: eeeeeeee-0000-0000-0000-000000000002
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -144,7 +144,7 @@ X-User-Role: DELIVERY
 ### [실패 예상] 허브 관리자 - 관련 없는 허브
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -157,7 +157,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 존재하지 않는 구간 ID
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000099
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -182,7 +182,7 @@ POST http://localhost:8081/internal/test/reset
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "SHIPPED"}
 
@@ -198,7 +198,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 {"status": "IN_TRANSIT"}
 
@@ -214,7 +214,7 @@ X-User-Role: DELIVERY
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "ARRIVED"}
 
@@ -241,7 +241,7 @@ POST http://localhost:8081/internal/test/reset
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "IN_TRANSIT"}
 
@@ -255,7 +255,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "ARRIVED"}
 
@@ -269,7 +269,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "COMPLETED"}
 
@@ -284,7 +284,7 @@ X-User-Role: MASTER
 ### Step4. 배송2 단건 조회 - Delivery 상태가 COMPLETED인지 확인
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000002
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -309,7 +309,7 @@ POST http://localhost:8081/internal/test/reset
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000002/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "SHIPPED"}
 
@@ -325,7 +325,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "COMPLETED"}
 
@@ -341,7 +341,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: eeeeeeee-0000-0000-0000-000000000002
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 {"status": "IN_TRANSIT"}
 
@@ -356,7 +356,7 @@ X-User-Role: DELIVERY
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/status
 Content-Type: application/json
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 {"status": "SHIPPED"}
 
@@ -371,7 +371,7 @@ X-User-Role: DELIVERY
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000003/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 {"status": "IN_TRANSIT"}
@@ -387,7 +387,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000099/status
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"status": "SHIPPED"}
 
@@ -456,7 +456,7 @@ POST http://localhost:8081/internal/test/reset
 ### 재배정 전 담당자 저장 (cccc-01)
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -470,7 +470,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/reassign
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"deliveryManagerId": "eeeeeeee-0000-0000-0000-000000000002"}
 
@@ -485,7 +485,7 @@ X-User-Role: MASTER
 ### 재배정 후 담당자 변경 확인 (cccc-01)
 GET http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -501,7 +501,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000001/reassign
 Content-Type: application/json
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 {"deliveryManagerId": "eeeeeeee-0000-0000-0000-000000000002"}
 
@@ -516,7 +516,7 @@ X-User-Role: DELIVERY
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000005/reassign
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"deliveryManagerId": "eeeeeeee-0000-0000-0000-000000000001"}
 
@@ -531,7 +531,7 @@ X-User-Role: MASTER
 PATCH http://localhost:8081/api/v1/shipments/cccccccc-0000-0000-0000-000000000099/reassign
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {"deliveryManagerId": "eeeeeeee-0000-0000-0000-000000000001"}
 

@@ -24,6 +24,10 @@ public class UserClientLocalStub implements UserClient {
   private static final UUID UNKNOWN_USER_ID =
       UUID.fromString("00000000-0000-0000-0000-000000000099");
 
+  // 로컬 테스트 시드 허브 ID (허브 조건 검증 통과용)
+  private static final UUID DEFAULT_HUB_ID =
+      UUID.fromString("dddddddd-0000-0000-0000-000000000001");
+
   @Override
   public List<DeliveryManagerInfo> getDeliveryManagers(UUID hubId, NodeType type) {
     log.debug("[LocalStub] UserClient.getDeliveryManagers hubId={} type={}", hubId, type);
@@ -49,7 +53,7 @@ public class UserClientLocalStub implements UserClient {
     if (userId.equals(UNKNOWN_USER_ID)) {
       throw new UserClientUnavailableException();
     }
-    return new UserInfo(userId, "테스트 사용자", UUID.randomUUID(), UUID.randomUUID(), UserRole.DELIVERY);
+    return new UserInfo(userId, "테스트 사용자", DEFAULT_HUB_ID, UUID.randomUUID(), UserRole.DELIVERY);
   }
 
   @Override

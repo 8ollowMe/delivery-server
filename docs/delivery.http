@@ -12,7 +12,7 @@ POST http://localhost:8081/internal/test/reset
 ### 전체 조회 (마스터)
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -25,7 +25,7 @@ X-User-Role: MASTER
 ### 상태 필터 (마스터)
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10&status=READY
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -38,7 +38,7 @@ X-User-Role: MASTER
 ### 허브 관리자 - 담당 허브 관련 배송만 자동 필터
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
@@ -52,7 +52,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 ### 배송 담당자 - 본인 담당 배송만 자동 필터
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -65,7 +65,7 @@ X-User-Role: DELIVERY
 ### 업체 담당자 - 전체 조회
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 X-User-Id: cccccccc-0000-0000-0000-000000000003
-X-User-Role: VENDOR
+X-Role: VENDOR
 X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 
 > {%
@@ -79,7 +79,7 @@ X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 ### 정렬 - 오래된 순 (마스터)
 GET http://localhost:8081/api/v1/deliveries?page=0&size=10&sortBy=CREATED_AT&direction=ASC
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -94,7 +94,7 @@ X-User-Role: MASTER
 ### 단건 조회 (마스터)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -107,7 +107,7 @@ X-User-Role: MASTER
 ### 단건 조회 (허브 관리자)
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
@@ -121,7 +121,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 ### 주문 ID로 조회 (마스터)
 GET http://localhost:8081/api/v1/deliveries/order/bbbbbbbb-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -146,7 +146,7 @@ GET http://localhost:8081/api/v1/deliveries?page=0&size=10
 ### [실패 예상] 허브 관리자 - 관련 없는 허브로 단건 접근
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -159,7 +159,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 배송 담당자 - 타인 배송 접근
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: eeeeeeee-0000-0000-0000-000000000099
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -171,7 +171,7 @@ X-User-Role: DELIVERY
 ### [실패 예상] 존재하지 않는 배송 ID
 GET http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -184,7 +184,7 @@ X-User-Role: MASTER
 ### [실패 예상] 존재하지 않는 주문 ID
 GET http://localhost:8081/api/v1/deliveries/order/bbbbbbbb-0000-0000-0000-000000000099
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -197,7 +197,7 @@ X-User-Role: MASTER
 ### [실패 예상] 잘못된 UUID 형식
 GET http://localhost:8081/api/v1/deliveries/invalid-uuid
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -278,7 +278,7 @@ POST http://localhost:8081/internal/test/reset
 POST http://localhost:8081/internal/v1/deliveries
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {
   "orderId": "bbbbbbbb-0000-0000-0000-000000000099",
@@ -297,7 +297,7 @@ X-User-Role: MASTER
 ### 배송 생성 후 구간별 담당자 배정 확인 - orderId로 조회
 GET http://localhost:8081/api/v1/deliveries/order/bbbbbbbb-0000-0000-0000-000000000099
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -318,7 +318,7 @@ X-User-Role: MASTER
 POST http://localhost:8081/api/v1/deliveries
 Content-Type: application/json
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {
   "orderId": "bbbbbbbb-0000-0000-0000-000000000099",
@@ -347,7 +347,7 @@ POST http://localhost:8081/internal/test/reset
 ### 취소 (마스터)
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -369,7 +369,7 @@ POST http://localhost:8081/internal/test/reset
 ### 취소 (허브 관리자 - 관련 허브)
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
@@ -392,7 +392,7 @@ POST http://localhost:8081/internal/test/reset
 ### 취소 (업체 담당자 - 도착지 일치)
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000003
-X-User-Role: VENDOR
+X-Role: VENDOR
 X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 
 > {%
@@ -406,7 +406,7 @@ X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 ### [실패 예상] 취소 - 허브 관리자 권한 없음 (관련 없는 허브)
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -419,7 +419,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 취소 - 업체 담당자 도착지 불일치
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000003
-X-User-Role: VENDOR
+X-Role: VENDOR
 X-Vendor-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -432,7 +432,7 @@ X-Vendor-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 취소 - 배송 담당자는 취소 불가
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/cancel
 X-User-Id: eeeeeeee-0000-0000-0000-000000000001
-X-User-Role: DELIVERY
+X-Role: DELIVERY
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -444,7 +444,7 @@ X-User-Role: DELIVERY
 ### [실패 예상] 취소 - 존재하지 않는 배송
 PATCH http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099/cancel
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -468,7 +468,7 @@ POST http://localhost:8081/internal/test/reset
 ### 삭제 (마스터)
 DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));
@@ -490,7 +490,7 @@ POST http://localhost:8081/internal/test/reset
 ### 삭제 (허브 관리자 - 출발 허브 일치)
 DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 
 > {%
@@ -504,7 +504,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000001
 ### [실패 예상] 삭제 - 허브 관리자 출발 허브 불일치
 DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000002
-X-User-Role: HUB
+X-Role: HUB
 X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 
 > {%
@@ -517,7 +517,7 @@ X-Hub-Id: dddddddd-0000-0000-0000-000000000099
 ### [실패 예상] 삭제 - 업체 담당자는 삭제 불가
 DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 X-User-Id: cccccccc-0000-0000-0000-000000000003
-X-User-Role: VENDOR
+X-Role: VENDOR
 X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 
 > {%
@@ -530,7 +530,7 @@ X-Vendor-Id: dddddddd-0000-0000-0000-000000000003
 ### [실패 예상] 삭제 - 존재하지 않는 배송
 DELETE http://localhost:8081/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000099
 X-User-Id: cccccccc-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 > {%
     client.log(JSON.stringify(response.body, null, 2));

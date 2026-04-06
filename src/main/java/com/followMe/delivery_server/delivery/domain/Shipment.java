@@ -15,11 +15,13 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(
     name = "p_shipment",
     uniqueConstraints = @UniqueConstraint(columnNames = {"delivery_id", "sequence"}))
+@SQLRestriction("deleted_at IS NULL")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shipment extends BaseAudit {
