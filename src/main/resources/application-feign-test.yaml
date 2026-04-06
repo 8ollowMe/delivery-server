@@ -1,0 +1,18 @@
+spring:
+  config:
+    import: ""   # Config Server 덮어쓰기 차단 (Kafka bootstrap-servers 오염 방지)
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/followme
+    username: followme
+    password: followme
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+eureka:
+  client:
+    register-with-eureka: true   # Feign 라우팅을 위해 Eureka 활성화
+    fetch-registry: true
