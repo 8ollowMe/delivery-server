@@ -23,14 +23,14 @@ public class DeliveryInternalController {
   }
 
   @PostMapping
-  public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create command) {
+  public DeliveryResponse.DeliveryCreate createDelivery(@RequestBody DeliveryRequest.Create command) {
     DeliveryResponse.DeliveryCreate response = deliveryService.createDelivery(command);
-    return ApiResponse.ok(response);
+    return response;
   }
 
   @GetMapping("/{deliveryId}/status")
-  public ResponseEntity<ApiResponse> getDelivery(@PathVariable UUID deliveryId) {
+  public StatusResponse getDelivery(@PathVariable UUID deliveryId) {
     StatusResponse response = deliveryService.getDeliveryStatusForInternal(deliveryId);
-    return ApiResponse.ok(response);
+    return response;
   }
 }
