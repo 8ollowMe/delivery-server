@@ -66,6 +66,14 @@ resilience4j:
         wait-duration-in-open-state: 10s    # 차단 후 복구 시도까지 대기 시간
         permitted-number-of-calls-in-half-open-state: 3  # 복구 시도 시 허용되는 호출 수
 
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
 server:
   port: 8081
 
