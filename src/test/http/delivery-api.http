@@ -12,14 +12,14 @@
 GET http://localhost:8000/api/v1/deliveries
 Authorization: Bearer dummy-token-for-local
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 ### 2. 배달 생성 (Gateway) - hub-service Feign 호출 발생
 POST http://localhost:8000/api/v1/deliveries
 Content-Type: application/json
 Authorization: Bearer dummy-token-for-local
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {
   "orderId": "bbbbbbbb-0000-0000-0000-000000000099",
@@ -31,13 +31,13 @@ X-User-Role: MASTER
 GET http://localhost:8000/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001
 Authorization: Bearer dummy-token-for-local
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 ### 4. 배달의 배송 목록 조회 (Gateway)
 GET http://localhost:8000/api/v1/deliveries/aaaaaaaa-0000-0000-0000-000000000001/shipments
 Authorization: Bearer dummy-token-for-local
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 ### ============================================================
 ### Direct (빠른 단위 테스트용 - gateway 우회)
@@ -46,13 +46,13 @@ X-User-Role: MASTER
 ### 5. 배달 목록 조회 (Direct)
 GET http://localhost:10005/api/v1/deliveries
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 ### 6. 배달 생성 (Direct)
 POST http://localhost:10005/api/v1/deliveries
 Content-Type: application/json
 X-User-Id: 00000000-0000-0000-0000-000000000001
-X-User-Role: MASTER
+X-Role: MASTER
 
 {
   "orderId": "bbbbbbbb-0000-0000-0000-000000000099",
