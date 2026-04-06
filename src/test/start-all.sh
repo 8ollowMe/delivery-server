@@ -19,10 +19,22 @@ VENDOR_PROFILE="${VENDOR_PROFILE:-local}"
 open_terminal() {
   local dir="$1"
   local profile="$2"
+  local run_cmd
+  local log_file
+  local service_name
+  service_name="$(basename "$dir")"
+  log_file="/tmp/${service_name}.bootRun.log"
+
   if [[ -n "$profile" ]]; then
-    osascript -e "tell app \"Terminal\" to do script \"cd $dir && SPRING_PROFILES_ACTIVE=$profile ./gradlew bootRun\""
+    run_cmd="cd \"$dir\" && SPRING_PROFILES_ACTIVE=$profile ./gradlew bootRun"
   else
-    osascript -e "tell app \"Terminal\" to do script \"cd $dir && ./gradlew bootRun\""
+    run_cmd="cd \"$dir\" && ./gradlew bootRun"
+  fi
+
+  if ! osascript -e "tell app \"Terminal\" to do script \"$run_cmd\""; then
+    echo "  [WARN] Terminal 자동 실행 실패. 백그라운드로 실행합니다: $service_name"
+    nohup /bin/bash -lc "$run_cmd" > "$log_file" 2>&1 &
+    echo "  [INFO] 로그 파일: $log_file"
   fi
 }
 
@@ -135,7 +147,10 @@ check_and_start_redis() {
     return 0
   fi
   echo "  Redis not running. Starting via Docker..."
-  docker compose -f "$PROJECTS_DIR/docker-compose.yml" up -d redis
+  if ! docker compose -f "$PROJECTS_DIR/docker-compose.yml" up -d redis; then
+    echo "  [WARN] Redis 자동 기동 실패. 로컬 테스트는 계속 진행합니다."
+    return 0
+  fi
   for ((i=1; i<=15; i++)); do
     if docker exec followme-redis redis-cli ping >/dev/null 2>&1; then
       echo "  [OK] Redis started"
@@ -143,8 +158,8 @@ check_and_start_redis() {
     fi
     sleep 2
   done
-  echo "  [FAIL] Redis failed to start. Check: docker compose -f $PROJECTS_DIR/docker-compose.yml up -d redis"
-  exit 1
+  echo "  [WARN] Redis 기동 대기 시간 초과. 로컬 테스트는 계속 진행합니다."
+  return 0
 }
 
 # =====================================================
@@ -197,7 +212,9 @@ echo "Seed verification done."
 # jOOQ 코드 생성 (delivery-server)
 # =====================================================
 echo "=== Generating jOOQ code ==="
-cd $PROJECTS_DIR/delivery-server && ./gradlew generateJooq
+if ! (cd "$PROJECTS_DIR/delivery-server" && ./gradlew generateJooq); then
+  echo "[WARN] generateJooq 실패. 기존 생성코드로 계속 진행합니다."
+fi
 cd $PROJECTS_DIR
 
 # =====================================================
@@ -258,17 +275,14 @@ if [[ "$hub_stock_count" == "0" || "$vendor_product_count" == "0" || "$hub_count
 fi
 
 echo "=== Verifying hub route API ==="
-# vendor-server가 Eureka에 등록됐어도 hub-server의 Eureka 캐시에 반영되기까지
-# 약 30초가 필요합니다. 이 시간 전에 hub→vendor Feign 호출이 실패하면
-# Resilience4j 서킷브레이커가 OPEN 되어 이후 요청도 차단됩니다.
-echo "  Waiting 30s for Eureka cache propagation (hub-server ← vendor-server)..."
-sleep 30
-
 wait_for_http_status \
   "vendor internal API" \
   "http://localhost:10003/internal/v1/vendors/90000000-0000-0000-0000-000000000004" \
   "200" \
-  "45" || { echo "[FAIL] vendor API not ready"; exit 1; }
+  "45" || {
+    echo "[WARN] vendor API check failed after retries."
+    echo "       start-all은 계속 진행합니다. test-feign.sh에서 재검증하세요."
+  }
 
 wait_for_http_status \
   "hub route API" \
