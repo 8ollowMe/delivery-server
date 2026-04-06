@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
     fallbackFactory = UserClientFallbackFactory.class,
     primary = false)
 public interface UserClient {
-  @GetMapping("/internal/users/delivery-managers")
+  @GetMapping("/internal/v1/users/deliveries")
   List<DeliveryManagerInfo> getDeliveryManagers(
       @RequestParam UUID hubId, @RequestParam NodeType type);
 
-  @GetMapping("/internal/users/{userId}")
+  @GetMapping("/internal/v1/users/{userId}")
   UserInfo getUserInfo(@PathVariable UUID userId);
 
-  @GetMapping("/internal/users/{userId}/sequence/last")
+  @PatchMapping("/internal/v1/users/{userId}/sequence/last")
   ResponseEntity<ApiResponse> updateDeliverySequence(@PathVariable UUID userId);
 }
