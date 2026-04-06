@@ -23,7 +23,8 @@ public class DeliveryInternalController {
   }
 
   @PostMapping
-  public DeliveryResponse.DeliveryCreate createDelivery(@RequestBody DeliveryRequest.Create command) {
+  public DeliveryResponse.DeliveryCreate createDelivery(
+      @RequestBody DeliveryRequest.Create command) {
     DeliveryResponse.DeliveryCreate response = deliveryService.createDelivery(command);
     return response;
   }

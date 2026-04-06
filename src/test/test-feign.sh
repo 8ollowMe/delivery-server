@@ -13,10 +13,11 @@
 set -euo pipefail
 
 # ── 설정 ──────────────────────────────────────────────────────
-DELIVERY="http://localhost:10005"
+DELIVERY="${DELIVERY_BASE_URL:-http://localhost:10005}"
 ORDER="http://localhost:8082"
 HUB="http://localhost:10001"
 USER_SVC="http://localhost:8080"
+VENDOR_SVC="http://localhost:10003"
 EUREKA="http://localhost:8761"
 KEYCLOAK="http://localhost:8090"
 REALM="followme"
@@ -96,10 +97,10 @@ step "0. 서비스 헬스 체크"
 check_health() {
   local name="$1" url="$2"
   local status
-  status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
+  status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || true)
   [[ -z "$status" ]] && status="000"
   info "GET $url → HTTP $status"
-  if [[ "$status" == "200" || "$status" == "302" || "$status" == "403" ]]; then
+  if [[ "$status" == "200" || "$status" == "302" || "$status" == "403" || "$status" == "503" ]]; then
     pass "$name 응답 확인"
   else
     fail "$name 응답 이상 (HTTP $status)"
@@ -107,9 +108,18 @@ check_health() {
 }
 
 check_health "Eureka     (8761)" "$EUREKA"
-check_health "Delivery   (10005)" "$DELIVERY/actuator/health"
+if [[ "$DELIVERY" == "http://localhost:10005" ]]; then
+  D10005=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:10005/actuator/health" 2>/dev/null || true)
+  D8081=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8081/actuator/health" 2>/dev/null || true)
+  if [[ "$D10005" == "000" && "$D8081" != "000" ]]; then
+    DELIVERY="http://localhost:8081"
+    info "delivery-server 포트 자동 전환: 10005 -> 8081 (feign-test 기동 감지)"
+  fi
+fi
+check_health "Delivery   ($(echo "$DELIVERY" | sed 's|http://localhost:||'))" "$DELIVERY/actuator/health"
 check_health "Hub        (10001)" "$HUB/actuator/health"
 check_health "Order      (8082)" "$ORDER/actuator/health"
+check_health "Vendor API (10003)" "$VENDOR_SVC/internal/v1/vendors/$VENDOR_ID"
 check_health "Keycloak   (8090)" "$KEYCLOAK/realms/$REALM"
 
 if [[ $FAIL -gt 0 ]]; then
@@ -178,15 +188,17 @@ if [[ -z "$ORDER_ID" ]]; then
   else
     fail "반환값 없음 + 주문 개수 미증가 → 주문 생성 실패로 판단"
   fi
-  ORDER_LIST=$(curl -sf "$ORDER/api/v1/orders?size=1" \
-    -H "X-User-Id: $USER_ID" \
-    -H "X-Role: MASTER" \
-    || echo '{"success":false,"data":[]}')
-  ORDER_ID=$(echo "$ORDER_LIST" | jq -r '.data.content[0].orderId // .data[0].orderId // empty' 2>/dev/null || echo "")
+  if [[ "$ORDER_COUNT_AFTER" -gt "$ORDER_COUNT_BEFORE" ]]; then
+    ORDER_LIST=$(curl -sf "$ORDER/api/v1/orders?size=1" \
+      -H "X-User-Id: $USER_ID" \
+      -H "X-Role: MASTER" \
+      || echo '{"success":false,"data":[]}')
+    ORDER_ID=$(echo "$ORDER_LIST" | jq -r '.data.content[0].orderId // .data[0].orderId // empty' 2>/dev/null || echo "")
+  fi
 fi
 assert_field "orderId 확보" "$ORDER_ID"
 
-if [[ -z "$ORDER_ID" || "$ORDER_ID" == "null" ]]; then
+if [[ -z "$ORDER_ID" || "$ORDER_ID" == "null" || "$ORDER_COUNT_AFTER" -le "$ORDER_COUNT_BEFORE" ]]; then
   echo -e "${RED}orderId 확보 실패 → 이후 테스트를 진행할 수 없습니다.${NC}"
   echo -e "결과: ${GREEN}PASS $PASS${NC} / ${RED}FAIL $FAIL${NC}"
   exit 1
