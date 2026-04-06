@@ -2,7 +2,7 @@
 # Gateway : http://localhost:8000
 # Direct  : http://localhost:10005
 # Bearer 토큰은 실제 Keycloak 토큰으로 교체 필요
-# X-User-Id, X-User-Role은 게이트웨이가 미주입 → 직접 추가
+# X-User-Id, X-Role은 게이트웨이가 미주입 → 직접 추가
 
 ### ============================================================
 ### Gateway 경유 (실제 환경과 동일)
