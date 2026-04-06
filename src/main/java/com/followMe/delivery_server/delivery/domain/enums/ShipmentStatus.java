@@ -1,5 +1,6 @@
 package com.followMe.delivery_server.delivery.domain.enums;
 
+import java.util.List;
 import java.util.Set;
 
 public enum ShipmentStatus {
@@ -25,6 +26,10 @@ public enum ShipmentStatus {
 
   public static boolean isInProgress(ShipmentStatus status) {
     return status.equals(SHIPPED) || status.equals(IN_TRANSIT) || status.equals(ARRIVED);
+  }
+
+  public static List<ShipmentStatus> done() {
+    return List.of(COMPLETED, FAILED, CANCELLED);
   }
 
   public boolean canTransitionTo(ShipmentStatus next) {

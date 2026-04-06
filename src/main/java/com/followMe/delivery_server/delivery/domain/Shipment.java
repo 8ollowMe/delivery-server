@@ -1,6 +1,8 @@
 package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
+import com.followMe.common.exception.BusinessException;
+import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
@@ -118,8 +120,37 @@ public class Shipment extends BaseAudit {
     this.status = next;
   }
 
+  public void checkReadAccess(UserContext user) {
+    switch (user.role()) {
+      case MASTER, VENDOR -> {}
+      case DELIVERY -> {
+        if (deliveryManager == null || !deliveryManager.getId().equals(user.userId()))
+          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      }
+      case HUB -> {
+        boolean hasHub =
+            (from != null && from.getId().equals(user.hubId()))
+                || (to != null && to.getId().equals(user.hubId()));
+        if (!hasHub) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      }
+      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+    }
+  }
+
   public void assignDeliveryManager(DeliveryManager deliveryManager) {
     this.deliveryManager = deliveryManager;
+  }
+
+  public void reassignDeliveryManager(
+      UserContext user,
+      DeliveryManager deliveryManager,
+      DeliveryPermissionChecker permissionChecker) {
+    permissionChecker.checkShipmentManagerReassignAccess(user, this);
+    if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
+      this.deliveryManager = deliveryManager;
+    } else {
+      throw new InvalidShipmentStatusException();
+    }
   }
 
   public void ship() {

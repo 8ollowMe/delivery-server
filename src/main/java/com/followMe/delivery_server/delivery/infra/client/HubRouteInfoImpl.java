@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.infra.hub;
+package com.followMe.delivery_server.delivery.infra.client;
 
 import com.followMe.delivery_server.delivery.domain.Node;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;

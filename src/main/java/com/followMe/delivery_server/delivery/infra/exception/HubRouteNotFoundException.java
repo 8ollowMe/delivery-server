@@ -1,6 +1,7 @@
-package com.followMe.delivery_server.delivery.domain.exception;
+package com.followMe.delivery_server.delivery.infra.exception;
 
 import com.followMe.common.exception.BusinessException;
+import com.followMe.delivery_server.delivery.domain.exception.DeliveryErrorCode;
 
 public class HubRouteNotFoundException extends BusinessException {
   public HubRouteNotFoundException() {

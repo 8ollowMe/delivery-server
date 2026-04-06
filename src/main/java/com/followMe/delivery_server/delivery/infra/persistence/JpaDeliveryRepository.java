@@ -2,9 +2,13 @@ package com.followMe.delivery_server.delivery.infra.persistence;
 
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
+import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +25,16 @@ public interface JpaDeliveryRepository extends DeliveryRepository, JpaRepository
 
   @Query("SELECT s FROM Shipment s JOIN FETCH s.delivery WHERE s.id = :shipmentId")
   Optional<Shipment> findShipmentById(UUID shipmentId);
+
+  @Query(
+      "SELECT s.deliveryManager.id, COUNT(s) FROM Shipment s "
+          + "WHERE s.status NOT IN :excludedStatus AND s.deliveryManager.id IN :managerIds "
+          + "GROUP BY s.deliveryManager.id")
+  List<Object[]> countRaw(List<UUID> managerIds, List<ShipmentStatus> excludedStatus);
+
+  default Map<UUID, Integer> countByDeliveryManagerIds(
+      List<UUID> managerIds, List<ShipmentStatus> excludedStatus) {
+    return countRaw(managerIds, excludedStatus).stream()
+        .collect(Collectors.toMap(row -> (UUID) row[0], row -> ((Long) row[1]).intValue()));
+  }
 }

@@ -1,4 +1,4 @@
-package com.followMe.delivery_server.delivery.presentation.dto;
+package com.followMe.delivery_server.delivery.application.dto;
 
 import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;

@@ -43,4 +43,13 @@ public class ShipmentController {
     shipmentService.updateStatus(user, shipmentId, request.status());
     return ApiResponse.ok();
   }
+
+  @PatchMapping("/{shipmentId}/reassign")
+  public ResponseEntity<ApiResponse> reassignDeliveryManager(
+      @PathVariable UUID shipmentId,
+      @ModelAttribute UserContext user,
+      @RequestBody @Valid ShipmentRequest.UpdateDeliveryManager request) {
+    shipmentService.reassignDeliveryManager(user, shipmentId, request);
+    return ApiResponse.ok();
+  }
 }

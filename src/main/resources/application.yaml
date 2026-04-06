@@ -12,9 +12,9 @@ spring:
       fail-fast: false
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/delivery_db
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:password}
+    url: jdbc:postgresql://localhost:5432/followme
+    username: ${DB_USERNAME:followme}
+    password: ${DB_PASSWORD:followme}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -30,6 +30,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         default_batch_fetch_size: 100
+        default_schema: delivery
 
   jooq:
     sql-dialect: POSTGRES

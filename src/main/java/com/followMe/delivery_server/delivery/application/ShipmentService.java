@@ -1,13 +1,16 @@
 package com.followMe.delivery_server.delivery.application;
 
+import com.followMe.delivery_server.delivery.application.dto.ShipmentRequest;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.Delivery;
+import com.followMe.delivery_server.delivery.domain.DeliveryManager;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
+import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import java.util.List;
 import java.util.UUID;
@@ -22,12 +25,13 @@ public class ShipmentService {
   private final DeliveryRepository deliveryRepository;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
+  private final DeliveryManagerAssigner assigner;
 
   @Transactional(readOnly = true)
   public List<ShipmentResponse.Detail> getShipmentsByDeliveryId(UserContext user, UUID deliveryId) {
     Delivery delivery =
         deliveryRepository.findById(deliveryId).orElseThrow(DeliveryNotFoundException::new);
-    permissionChecker.checkReadAccess(user, delivery.getShipments());
+    delivery.checkReadAccess(user);
     return deliveryQueryPort.findShipmentsByDeliveryId(deliveryId);
   }
 
@@ -35,7 +39,7 @@ public class ShipmentService {
   public ShipmentResponse.Detail getShipment(UserContext user, UUID shipmentId) {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
-    permissionChecker.checkReadAccess(user, List.of(shipment));
+    shipment.checkReadAccess(user);
     return deliveryQueryPort.findShipmentById(shipmentId);
   }
 
@@ -44,5 +48,15 @@ public class ShipmentService {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
     shipment.updateShipmentStatus(status, user, permissionChecker);
+  }
+
+  @Transactional
+  public void reassignDeliveryManager(
+      UserContext user, UUID shipmentId, ShipmentRequest.UpdateDeliveryManager request) {
+    Shipment shipment =
+        deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);
+    DeliveryManager newManager =
+        assigner.getDeliveryManager(request.newManagerId(), shipment.getFrom().getId());
+    shipment.reassignDeliveryManager(user, newManager, permissionChecker);
   }
 }

@@ -5,12 +5,11 @@ import com.followMe.common.pagination.PageResponse;
 import com.followMe.common.response.ApiResponse;
 import com.followMe.delivery_server.delivery.application.DeliveryService;
 import com.followMe.delivery_server.delivery.application.ShipmentService;
-import com.followMe.delivery_server.delivery.application.dto.DeliveryRequest;
 import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
+import com.followMe.delivery_server.delivery.application.dto.DeliverySearchRequest;
 import com.followMe.delivery_server.delivery.application.dto.ShipmentResponse;
 import com.followMe.delivery_server.delivery.domain.UserContext;
 import com.followMe.delivery_server.delivery.domain.UserRole;
-import com.followMe.delivery_server.delivery.presentation.dto.DeliverySearchRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,12 +42,6 @@ public class DeliveryController {
     PageResponse<DeliveryResponse.ListItem> response =
         deliveryService.getDeliveries(user, PageRequest.of(page, size), request.toCondition());
     return ApiResponse.ok(response);
-  }
-
-  @PostMapping
-  public ResponseEntity<ApiResponse> createDelivery(@RequestBody DeliveryRequest.Create request) {
-    deliveryService.createDelivery(request);
-    return ApiResponse.ok();
   }
 
   @GetMapping("/order/{orderId}")
