@@ -7,6 +7,7 @@ import com.followMe.delivery_server.delivery.application.dto.DeliveryResponse;
 import com.followMe.delivery_server.delivery.application.dto.StatusResponse;
 import com.followMe.delivery_server.delivery.domain.*;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
+import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
@@ -31,18 +32,19 @@ public class DeliveryService {
   private final DeliveryPermissionChecker permissionChecker;
   private final UserClient userClient;
   private final OrderDeliveryAssigner orderDeliveryAssigner;
+  private final DeliveryEvents events;
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
     List<Node> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
     Delivery delivery = Delivery.create(command.orderId(), nodes);
+    deliveryRepository.save(delivery);
     Shipment shipment = delivery.getShipments().getFirst();
     NodeType type = shipment.getTo().getType();
     DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
-    shipment.assignDeliveryManager(manager);
+    shipment.assignDeliveryManager(manager, events);
     userClient.updateDeliverySequence(manager.getId());
     orderDeliveryAssigner.assignDeliveryToOrder(delivery.getOrderId().getValue(), manager.getId());
-    deliveryRepository.save(delivery);
     return DeliveryResponse.DeliveryCreate.of(delivery, manager);
   }
 
