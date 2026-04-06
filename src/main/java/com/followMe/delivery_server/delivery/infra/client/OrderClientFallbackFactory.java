@@ -1,6 +1,6 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
-import com.followMe.delivery_server.delivery.presentation.dto.OrderRequest;
+import com.followMe.delivery_server.delivery.application.dto.OrderRequest;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FallbackFactory;

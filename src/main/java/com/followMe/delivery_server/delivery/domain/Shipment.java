@@ -1,15 +1,10 @@
 package com.followMe.delivery_server.delivery.domain;
 
 import com.followMe.common.entity.BaseAudit;
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
-import com.followMe.delivery_server.delivery.domain.exception.InvalidNodeInformationException;
-import com.followMe.delivery_server.delivery.domain.exception.InvalidShipmentStatusException;
-import com.followMe.delivery_server.delivery.domain.exception.NodeTypeMismatchException;
-import com.followMe.delivery_server.delivery.domain.exception.ShipmentNotFoundException;
+import com.followMe.delivery_server.delivery.domain.exception.*;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -125,15 +120,15 @@ public class Shipment extends BaseAudit {
       case MASTER, VENDOR -> {}
       case DELIVERY -> {
         if (deliveryManager == null || !deliveryManager.getId().equals(user.userId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+          throw new ForbiddenException();
       }
       case HUB -> {
         boolean hasHub =
             (from != null && from.getId().equals(user.hubId()))
                 || (to != null && to.getId().equals(user.hubId()));
-        if (!hasHub) throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        if (!hasHub) throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 
@@ -146,6 +141,14 @@ public class Shipment extends BaseAudit {
       DeliveryManager deliveryManager,
       DeliveryPermissionChecker permissionChecker) {
     permissionChecker.checkShipmentManagerReassignAccess(user, this);
+    if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
+      this.deliveryManager = deliveryManager;
+    } else {
+      throw new InvalidShipmentStatusException();
+    }
+  }
+
+  public void reassignDeliveryManagerForSystem(DeliveryManager deliveryManager) {
     if (this.status == ShipmentStatus.PENDING || this.status == ShipmentStatus.FAILED) {
       this.deliveryManager = deliveryManager;
     } else {

@@ -1,10 +1,9 @@
 package com.followMe.delivery_server.delivery.application;
 
-import com.followMe.common.exception.BusinessException;
-import com.followMe.common.exception.CommonErrorCode;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.Shipment;
 import com.followMe.delivery_server.delivery.domain.UserContext;
+import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import java.util.HashSet;
 import java.util.List;
@@ -30,15 +29,14 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
     switch (user.role()) {
       case MASTER -> {}
       case HUB -> {
-        if (user.hubId() == null || !nodeIds.contains(user.hubId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+        if (user.hubId() == null || !nodeIds.contains(user.hubId())) throw new ForbiddenException();
       }
       case VENDOR -> {
         Shipment last = delivery.getShipments().getLast();
         if (user.vendorId() == null || !user.vendorId().equals(last.getTo().getId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+          throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 
@@ -49,9 +47,9 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
       case HUB -> {
         Shipment first = delivery.getShipments().getFirst();
         if (user.hubId() == null || !user.hubId().equals(first.getFrom().getId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+          throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 
@@ -62,9 +60,9 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
       case DELIVERY -> {
         if (shipment.getDeliveryManager() == null
             || !shipment.getDeliveryManager().getId().equals(user.userId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+          throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 
@@ -74,9 +72,9 @@ public class DeliveryPermissionCheckerImpl implements DeliveryPermissionChecker 
       case MASTER -> {}
       case HUB -> {
         if (user.hubId() == null || !user.hubId().equals(shipment.getFrom().getId()))
-          throw new BusinessException(CommonErrorCode.FORBIDDEN);
+          throw new ForbiddenException();
       }
-      default -> throw new BusinessException(CommonErrorCode.FORBIDDEN);
+      default -> throw new ForbiddenException();
     }
   }
 }
