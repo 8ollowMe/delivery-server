@@ -13,7 +13,7 @@ public class DeliveryManagerSelector {
     return candidates.stream()
         .min(
             Comparator.comparingInt(DeliveryManagerCandidate::assignedCount)
-                .thenComparingInt(DeliveryManagerCandidate::sequence))
+                .thenComparingLong(DeliveryManagerCandidate::sequence))
         .map(
             candidate ->
                 new DeliveryManagerInfo(candidate.id(), candidate.name(), candidate.sequence()))
