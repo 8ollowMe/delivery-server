@@ -3,60 +3,38 @@
  */
 package com.followMe.delivery_server.jooq;
 
+
 import com.followMe.delivery_server.jooq.tables.PDelivery;
 import com.followMe.delivery_server.jooq.tables.PShipment;
 import com.followMe.delivery_server.jooq.tables.records.PDeliveryRecord;
 import com.followMe.delivery_server.jooq.tables.records.PShipmentRecord;
+
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
-/** A class modelling foreign key relationships and constraints of tables in delivery. */
-@SuppressWarnings({"all", "unchecked", "rawtypes", "this-escape"})
+
+/**
+ * A class modelling foreign key relationships and constraints of tables in
+ * delivery.
+ */
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Keys {
 
-  // -------------------------------------------------------------------------
-  // UNIQUE and PRIMARY KEY definitions
-  // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // UNIQUE and PRIMARY KEY definitions
+    // -------------------------------------------------------------------------
 
-  public static final UniqueKey<PDeliveryRecord> P_DELIVERY_PKEY =
-      Internal.createUniqueKey(
-          PDelivery.P_DELIVERY,
-          DSL.name("p_delivery_pkey"),
-          new TableField[] {PDelivery.P_DELIVERY.ID},
-          true);
-  public static final UniqueKey<PShipmentRecord> P_SHIPMENT_DELIVERY_ID_SEQUENCE_KEY =
-      Internal.createUniqueKey(
-          PShipment.P_SHIPMENT,
-          DSL.name("p_shipment_delivery_id_sequence_key"),
-          new TableField[] {PShipment.P_SHIPMENT.DELIVERY_ID, PShipment.P_SHIPMENT.SEQUENCE},
-          true);
-  public static final UniqueKey<PShipmentRecord> P_SHIPMENT_PKEY =
-      Internal.createUniqueKey(
-          PShipment.P_SHIPMENT,
-          DSL.name("p_shipment_pkey"),
-          new TableField[] {PShipment.P_SHIPMENT.ID},
-          true);
-  public static final UniqueKey<PShipmentRecord> UKOGICAD4T4JBWY7GHQYHQLV6CC =
-      Internal.createUniqueKey(
-          PShipment.P_SHIPMENT,
-          DSL.name("ukogicad4t4jbwy7ghqyhqlv6cc"),
-          new TableField[] {PShipment.P_SHIPMENT.DELIVERY_ID, PShipment.P_SHIPMENT.SEQUENCE},
-          true);
+    public static final UniqueKey<PDeliveryRecord> P_DELIVERY_PKEY = Internal.createUniqueKey(PDelivery.P_DELIVERY, DSL.name("p_delivery_pkey"), new TableField[] { PDelivery.P_DELIVERY.ID }, true);
+    public static final UniqueKey<PShipmentRecord> P_SHIPMENT_DELIVERY_ID_SEQUENCE_KEY = Internal.createUniqueKey(PShipment.P_SHIPMENT, DSL.name("p_shipment_delivery_id_sequence_key"), new TableField[] { PShipment.P_SHIPMENT.DELIVERY_ID, PShipment.P_SHIPMENT.SEQUENCE }, true);
+    public static final UniqueKey<PShipmentRecord> P_SHIPMENT_PKEY = Internal.createUniqueKey(PShipment.P_SHIPMENT, DSL.name("p_shipment_pkey"), new TableField[] { PShipment.P_SHIPMENT.ID }, true);
+    public static final UniqueKey<PShipmentRecord> UKOGICAD4T4JBWY7GHQYHQLV6CC = Internal.createUniqueKey(PShipment.P_SHIPMENT, DSL.name("ukogicad4t4jbwy7ghqyhqlv6cc"), new TableField[] { PShipment.P_SHIPMENT.DELIVERY_ID, PShipment.P_SHIPMENT.SEQUENCE }, true);
 
-  // -------------------------------------------------------------------------
-  // FOREIGN KEY definitions
-  // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // FOREIGN KEY definitions
+    // -------------------------------------------------------------------------
 
-  public static final ForeignKey<PShipmentRecord, PDeliveryRecord>
-      P_SHIPMENT__FKE2FWTYE1DJKMFN17M58APHQ9B =
-          Internal.createForeignKey(
-              PShipment.P_SHIPMENT,
-              DSL.name("fke2fwtye1djkmfn17m58aphq9b"),
-              new TableField[] {PShipment.P_SHIPMENT.DELIVERY_ID},
-              Keys.P_DELIVERY_PKEY,
-              new TableField[] {PDelivery.P_DELIVERY.ID},
-              true);
+    public static final ForeignKey<PShipmentRecord, PDeliveryRecord> P_SHIPMENT__FKE2FWTYE1DJKMFN17M58APHQ9B = Internal.createForeignKey(PShipment.P_SHIPMENT, DSL.name("fke2fwtye1djkmfn17m58aphq9b"), new TableField[] { PShipment.P_SHIPMENT.DELIVERY_ID }, Keys.P_DELIVERY_PKEY, new TableField[] { PDelivery.P_DELIVERY.ID }, true);
 }
