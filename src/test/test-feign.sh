@@ -240,7 +240,7 @@ else
     DELIVERY_ID=$(curl -sf "$DELIVERY/api/v1/deliveries?size=50" \
       -H "X-User-Id: $USER_ID" \
       -H "X-Role: MASTER" \
-      | jq -r --arg oid "$ORDER_ID" '.data.content[]? | select(.orderId == $oid) | .id' | head -n 1)
+      | jq -r --arg oid "$ORDER_ID" '.data.content[]? | select(.orderId == $oid) | .userId' | head -n 1)
   else
     fail "배송 생성 실패 (반환값 없음 + 개수 미증가)"
     info "응답: $(echo "$CREATE_RESULT" | jq -c '.' 2>/dev/null || echo "$CREATE_RESULT")"
@@ -259,7 +259,7 @@ SHIPMENT_COUNT=$(echo "$SHIPMENTS" | jq '.data | length' 2>/dev/null || echo "0"
 info "생성된 구간 수: $SHIPMENT_COUNT (허브 라우팅 결과)"
 assert_ge "구간 수 ≥ 1 (hub-server 라우팅 응답 반영)" "$SHIPMENT_COUNT" 1
 
-FIRST_SHIPMENT_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].id // empty')
+FIRST_SHIPMENT_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].userId // empty')
 
 # ── 4. UserClient.getDeliveryManagers 테스트 ───────────────────
 step "4. [UserClient] getDeliveryManagers — user-server Feign 통신 테스트"
@@ -340,7 +340,7 @@ feign "GET user-server:/internal/v1/users/{userId}"
 info "구간 담당자 수동 재배정 시 대상 유저 정보를 조회합니다."
 
 # 현재 담당자 ID 획득
-CURRENT_MANAGER_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].deliveryManager.id // empty')
+CURRENT_MANAGER_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].deliveryManager.userId // empty')
 assert_field "재배정 대상 담당자 ID" "$CURRENT_MANAGER_ID"
 
 if [[ -n "$FIRST_SHIPMENT_ID" && "$FIRST_SHIPMENT_ID" != "null" && \

@@ -114,7 +114,7 @@ build_master_and_token() {
 
   master_kc_id=$(curl -s "$KEYCLOAK/admin/realms/$REALM/users?username=$MASTER_USERNAME" \
     -H "Authorization: Bearer $kc_admin_token" \
-    | jq -r '.[0].id // empty')
+    | jq -r '.[0].userId // empty')
 
   if [[ -z "$master_kc_id" ]]; then
     echo "  [ERROR] Keycloak에서 master 유저를 찾을 수 없습니다"
@@ -128,7 +128,7 @@ build_master_and_token() {
 
   master_role_id=$(curl -s "$KEYCLOAK/admin/realms/$REALM/roles/MASTER" \
     -H "Authorization: Bearer $kc_admin_token" \
-    | jq -r '.id // empty')
+    | jq -r '.userId // empty')
 
   if [[ -n "$master_role_id" ]]; then
     curl -s -o /dev/null -X POST "$KEYCLOAK/admin/realms/$REALM/users/$master_kc_id/role-mappings/realm" \

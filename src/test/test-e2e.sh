@@ -153,14 +153,14 @@ DELIVERY_BY_ORDER=$(curl -s "$DELIVERY/api/v1/deliveries/order/$ORDER_ID" \
 DELIVERY_OK=$(echo "$DELIVERY_BY_ORDER" | jq -r '.success // false' 2>/dev/null || echo "false")
 if [[ "$DELIVERY_OK" == "true" ]]; then
   pass "주문 연동 배송 조회"
-  DELIVERY_ID=$(echo "$DELIVERY_BY_ORDER" | jq -r '.data.id // empty')
+  DELIVERY_ID=$(echo "$DELIVERY_BY_ORDER" | jq -r '.data.userId // empty')
 else
   echo -e "  ${YELLOW}[WARN]${NC} 주문 연동 배송 조회 실패 (목록 기반 보정 시도)"
   echo -e "  ${GRAY}$(echo "$DELIVERY_BY_ORDER" | jq -c '.' 2>/dev/null || echo "$DELIVERY_BY_ORDER")${NC}"
   # 일부 환경에서 /order/{orderId} 조회가 실패해도 실제 배송은 생성되므로 목록 기반으로 보정 조회
   DELIVERY_LIST_BY_ORDER=$(curl -s "$DELIVERY/api/v1/deliveries?size=50" \
     -H "X-User-Id: $USER_ID" -H "X-Role: MASTER" || echo '{"success":false}')
-  DELIVERY_ID=$(echo "$DELIVERY_LIST_BY_ORDER" | jq -r --arg oid "$ORDER_ID" '.data.content[]? | select(.orderId == $oid) | .id' | head -n 1)
+  DELIVERY_ID=$(echo "$DELIVERY_LIST_BY_ORDER" | jq -r --arg oid "$ORDER_ID" '.data.content[]? | select(.orderId == $oid) | .userId' | head -n 1)
 fi
 assert_field "deliveryId" "$DELIVERY_ID"
 echo -e "  ${GRAY}배송 상태: $(echo "$DELIVERY_BY_ORDER" | jq -r '.data.status // empty')${NC}"
@@ -182,8 +182,8 @@ fi
 # ── 5. 배송자 권한 검증 ─────────────────────────────────────────
 step "5. 배송자 권한 검증 (본인 성공 / 타인 실패)"
 
-FIRST_SID=$(echo "$SHIPMENTS" | jq -r '.data[0].id // empty')
-FIRST_MANAGER_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].deliveryManager.id // empty')
+FIRST_SID=$(echo "$SHIPMENTS" | jq -r '.data[0].userId // empty')
+FIRST_MANAGER_ID=$(echo "$SHIPMENTS" | jq -r '.data[0].deliveryManager.userId // empty')
 OUTSIDER_ID="$(python3 -c "import uuid; print(uuid.uuid4())")"
 
 assert_field "첫 구간 shipmentId" "$FIRST_SID"
@@ -229,7 +229,7 @@ while IFS= read -r sid; do
   change_status "$sid" "ARRIVED"
   change_status "$sid" "COMPLETED"
   sleep 1
-done < <(echo "$SHIPMENTS" | jq -r '.data[].id')
+done < <(echo "$SHIPMENTS" | jq -r '.data[].userId')
 
 # ── 7. 최종 배송 상태 확인 ────────────────────────────────────
 step "7. 최종 배송 상태 확인"
