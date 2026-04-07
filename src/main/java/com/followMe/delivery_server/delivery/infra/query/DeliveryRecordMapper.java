@@ -9,6 +9,7 @@ import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import org.jooq.Record;
@@ -19,13 +20,14 @@ import org.springframework.stereotype.Component;
 public class DeliveryRecordMapper {
 
   public DeliveryResponse.Detail toDetail(Record first, Stream<Record> records) {
+    List<Record> shipmentRecords = records.filter(r -> r.get(P_SHIPMENT.ID) != null).toList();
     List<ShipmentResponse.Detail> shipments =
-        records.filter(r -> r.get(P_SHIPMENT.ID) != null).map(this::toShipmentDetail).toList();
+        shipmentRecords.stream().map(this::toShipmentDetail).toList();
 
     return new DeliveryResponse.Detail(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
-        deriveDeliveryStatus(shipments.stream().map(ShipmentResponse.Detail::status).toList()),
+        deriveDeliveryStatus(shipmentRecords),
         shipments,
         first.get(P_DELIVERY.CREATED_AT).toLocalDateTime());
   }
@@ -37,7 +39,7 @@ public class DeliveryRecordMapper {
       return new DeliveryResponse.ListItem(
           first.get(P_DELIVERY.ID),
           first.get(P_DELIVERY.ORDER_ID),
-          DeliveryStatus.READY,
+          DeliveryStatus.HUB_WAITING,
           null,
           null,
           0,
@@ -72,13 +74,10 @@ public class DeliveryRecordMapper {
       }
     }
 
-    List<ShipmentStatus> statuses =
-        shipments.stream().map(r -> ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS))).toList();
-
     return new DeliveryResponse.ListItem(
         first.get(P_DELIVERY.ID),
         first.get(P_DELIVERY.ORDER_ID),
-        deriveDeliveryStatus(statuses),
+        deriveDeliveryStatus(shipments),
         fromHub,
         toVendor,
         totalShipments,
@@ -105,6 +104,10 @@ public class DeliveryRecordMapper {
                 record.get(P_SHIPMENT.DELIVERY_MANAGER_ID),
                 record.get(P_SHIPMENT.DELIVERY_MANAGER_NAME))
             : null,
+        record.get(P_SHIPMENT.ESTIMATED_DISTANCE),
+        record.get(P_SHIPMENT.ESTIMATED_DURATION),
+        record.get(P_SHIPMENT.ACTUAL_DISTANCE),
+        record.get(P_SHIPMENT.ACTUAL_DURATION),
         record.get(P_SHIPMENT.SHIPPED_AT) != null
             ? record.get(P_SHIPMENT.SHIPPED_AT).toLocalDateTime()
             : null,
@@ -116,15 +119,49 @@ public class DeliveryRecordMapper {
             : null);
   }
 
-  private DeliveryStatus deriveDeliveryStatus(List<ShipmentStatus> statuses) {
-    if (statuses.isEmpty()) return DeliveryStatus.READY;
+  private DeliveryStatus deriveDeliveryStatus(List<Record> shipmentRecords) {
+    if (shipmentRecords.isEmpty()) return DeliveryStatus.HUB_WAITING;
+
+    List<ShipmentStatus> statuses =
+        shipmentRecords.stream()
+            .map(r -> ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS)))
+            .toList();
+
     if (statuses.stream().anyMatch(s -> s == ShipmentStatus.FAILED)) return DeliveryStatus.FAILED;
-    if (statuses.stream().allMatch(s -> s == ShipmentStatus.COMPLETED))
-      return DeliveryStatus.COMPLETED;
-    if (statuses.stream().anyMatch(ShipmentStatus::isInProgress)) return DeliveryStatus.IN_PROGRESS;
     if (statuses.stream().allMatch(s -> s == ShipmentStatus.CANCELLED))
       return DeliveryStatus.CANCELLED;
-    return DeliveryStatus.READY;
+    if (statuses.stream().allMatch(s -> s == ShipmentStatus.COMPLETED))
+      return DeliveryStatus.COMPLETED;
+
+    // 현재 활성 shipment(가장 작은 sequence 중 완료/취소 아닌 것) 기준으로 세분화
+    Record active =
+        shipmentRecords.stream()
+            .filter(
+                r -> {
+                  ShipmentStatus s = ShipmentStatus.valueOf(r.get(P_SHIPMENT.STATUS));
+                  return s != ShipmentStatus.COMPLETED && s != ShipmentStatus.CANCELLED;
+                })
+            .min(Comparator.comparingInt(r -> r.get(P_SHIPMENT.SEQUENCE)))
+            .orElse(null);
+
+    if (active == null) return DeliveryStatus.COMPLETED;
+
+    ShipmentType type = ShipmentType.valueOf(active.get(P_SHIPMENT.TYPE));
+    ShipmentStatus status = ShipmentStatus.valueOf(active.get(P_SHIPMENT.STATUS));
+
+    if (type == ShipmentType.HUB_TO_HUB) {
+      return switch (status) {
+        case SHIPPED, IN_TRANSIT -> DeliveryStatus.HUB_MOVING;
+        case ARRIVED -> DeliveryStatus.DESTINATION_HUB_ARRIVED;
+        default -> DeliveryStatus.HUB_WAITING;
+      };
+    } else {
+      return switch (status) {
+        case SHIPPED, IN_TRANSIT -> DeliveryStatus.DELIVERING;
+        case ARRIVED -> DeliveryStatus.VENDOR_MOVING;
+        default -> DeliveryStatus.HUB_WAITING;
+      };
+    }
   }
 
   private DeliveryResponse.NodeInfo fromNodeOf(Record record) {

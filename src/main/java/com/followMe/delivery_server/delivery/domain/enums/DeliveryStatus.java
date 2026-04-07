@@ -1,25 +1,12 @@
 package com.followMe.delivery_server.delivery.domain.enums;
 
-import java.util.Set;
-
 public enum DeliveryStatus {
-  READY,
-  IN_PROGRESS,
+  HUB_WAITING,
+  HUB_MOVING,
+  DESTINATION_HUB_ARRIVED,
+  DELIVERING,
+  VENDOR_MOVING,
   COMPLETED,
   FAILED,
-  CANCELLED;
-
-  static {
-    READY.allowedTransitions = Set.of(IN_PROGRESS, CANCELLED);
-    IN_PROGRESS.allowedTransitions = Set.of(COMPLETED, FAILED);
-    COMPLETED.allowedTransitions = Set.of();
-    FAILED.allowedTransitions = Set.of(CANCELLED);
-    CANCELLED.allowedTransitions = Set.of();
-  }
-
-  private Set<DeliveryStatus> allowedTransitions;
-
-  public boolean isTransitionNotAllowed(DeliveryStatus next) {
-    return !allowedTransitions.contains(next);
-  }
+  CANCELLED
 }

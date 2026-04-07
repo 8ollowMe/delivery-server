@@ -7,6 +7,7 @@ import com.followMe.delivery_server.jooq.Delivery;
 import com.followMe.delivery_server.jooq.Keys;
 import com.followMe.delivery_server.jooq.tables.PDelivery.PDeliveryPath;
 import com.followMe.delivery_server.jooq.tables.records.PShipmentRecord;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -149,6 +150,22 @@ public class PShipment extends TableImpl<PShipmentRecord> {
   /** The column <code>delivery.p_shipment.deleted_by</code>. */
   public final TableField<PShipmentRecord, UUID> DELETED_BY =
       createField(DSL.name("deleted_by"), SQLDataType.UUID, this, "");
+
+  /** The column <code>delivery.p_shipment.actual_distance</code>. */
+  public final TableField<PShipmentRecord, BigDecimal> ACTUAL_DISTANCE =
+      createField(DSL.name("actual_distance"), SQLDataType.NUMERIC(38, 2), this, "");
+
+  /** The column <code>delivery.p_shipment.actual_duration</code>. */
+  public final TableField<PShipmentRecord, BigDecimal> ACTUAL_DURATION =
+      createField(DSL.name("actual_duration"), SQLDataType.NUMERIC(38, 2), this, "");
+
+  /** The column <code>delivery.p_shipment.estimated_distance</code>. */
+  public final TableField<PShipmentRecord, BigDecimal> ESTIMATED_DISTANCE =
+      createField(DSL.name("estimated_distance"), SQLDataType.NUMERIC(38, 2), this, "");
+
+  /** The column <code>delivery.p_shipment.estimated_duration</code>. */
+  public final TableField<PShipmentRecord, BigDecimal> ESTIMATED_DURATION =
+      createField(DSL.name("estimated_duration"), SQLDataType.NUMERIC(38, 2), this, "");
 
   private PShipment(Name alias, Table<PShipmentRecord> aliased) {
     this(alias, aliased, (Field<?>[]) null, null);

@@ -95,6 +95,66 @@ public class PDeliveryRecord extends UpdatableRecordImpl<PDeliveryRecord> {
     return (UUID) get(7);
   }
 
+  /** Setter for <code>delivery.p_delivery.delivery_address</code>. */
+  public void setDeliveryAddress(String value) {
+    set(8, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.delivery_address</code>. */
+  public String getDeliveryAddress() {
+    return (String) get(8);
+  }
+
+  /** Setter for <code>delivery.p_delivery.destination_hub_id</code>. */
+  public void setDestinationHubId(UUID value) {
+    set(9, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.destination_hub_id</code>. */
+  public UUID getDestinationHubId() {
+    return (UUID) get(9);
+  }
+
+  /** Setter for <code>delivery.p_delivery.recipient</code>. */
+  public void setRecipient(String value) {
+    set(10, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.recipient</code>. */
+  public String getRecipient() {
+    return (String) get(10);
+  }
+
+  /** Setter for <code>delivery.p_delivery.recipient_slack_id</code>. */
+  public void setRecipientSlackId(String value) {
+    set(11, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.recipient_slack_id</code>. */
+  public String getRecipientSlackId() {
+    return (String) get(11);
+  }
+
+  /** Setter for <code>delivery.p_delivery.source_hub_id</code>. */
+  public void setSourceHubId(UUID value) {
+    set(12, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.source_hub_id</code>. */
+  public UUID getSourceHubId() {
+    return (UUID) get(12);
+  }
+
+  /** Setter for <code>delivery.p_delivery.vendor_delivery_manager_id</code>. */
+  public void setVendorDeliveryManagerId(UUID value) {
+    set(13, value);
+  }
+
+  /** Getter for <code>delivery.p_delivery.vendor_delivery_manager_id</code>. */
+  public UUID getVendorDeliveryManagerId() {
+    return (UUID) get(13);
+  }
+
   // -------------------------------------------------------------------------
   // Primary key information
   // -------------------------------------------------------------------------
@@ -122,7 +182,13 @@ public class PDeliveryRecord extends UpdatableRecordImpl<PDeliveryRecord> {
       UUID createdBy,
       UUID updatedBy,
       OffsetDateTime deletedAt,
-      UUID deletedBy) {
+      UUID deletedBy,
+      String deliveryAddress,
+      UUID destinationHubId,
+      String recipient,
+      String recipientSlackId,
+      UUID sourceHubId,
+      UUID vendorDeliveryManagerId) {
     super(PDelivery.P_DELIVERY);
 
     setId(id);
@@ -133,6 +199,12 @@ public class PDeliveryRecord extends UpdatableRecordImpl<PDeliveryRecord> {
     setUpdatedBy(updatedBy);
     setDeletedAt(deletedAt);
     setDeletedBy(deletedBy);
+    setDeliveryAddress(deliveryAddress);
+    setDestinationHubId(destinationHubId);
+    setRecipient(recipient);
+    setRecipientSlackId(recipientSlackId);
+    setSourceHubId(sourceHubId);
+    setVendorDeliveryManagerId(vendorDeliveryManagerId);
     resetChangedOnNotNull();
   }
 }

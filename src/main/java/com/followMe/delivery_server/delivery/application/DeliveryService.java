@@ -15,6 +15,7 @@ import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionCh
 import com.followMe.delivery_server.delivery.domain.service.DeliverySequenceUpdater;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
+import com.followMe.delivery_server.delivery.infra.client.UserClient;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
   private final HubRouteInfo hubRouteInfo;
+  private final UserClient userClient;
   private final DeliveryManagerAssigner assigner;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
@@ -36,8 +38,20 @@ public class DeliveryService {
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
-    List<Node> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
-    Delivery delivery = Delivery.create(command.orderId(), nodes);
+    List<RouteNode> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
+    String vendorAddress = nodes.getLast().address();
+
+    UserInfo recipient = userClient.getUserInfo(command.recipientId());
+
+    Delivery delivery =
+        Delivery.create(
+            command.orderId(),
+            command.sourceHubId(),
+            vendorAddress,
+            recipient.name(),
+            recipient.slackId(),
+            nodes);
+
     deliveryRepository.save(delivery);
     Shipment shipment = delivery.getShipments().getFirst();
     NodeType type = shipment.getTo().getType();

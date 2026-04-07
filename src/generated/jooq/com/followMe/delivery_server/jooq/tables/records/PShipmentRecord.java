@@ -4,6 +4,7 @@
 package com.followMe.delivery_server.jooq.tables.records;
 
 import com.followMe.delivery_server.jooq.tables.PShipment;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.jooq.Record1;
@@ -245,6 +246,46 @@ public class PShipmentRecord extends UpdatableRecordImpl<PShipmentRecord> {
     return (UUID) get(22);
   }
 
+  /** Setter for <code>delivery.p_shipment.actual_distance</code>. */
+  public void setActualDistance(BigDecimal value) {
+    set(23, value);
+  }
+
+  /** Getter for <code>delivery.p_shipment.actual_distance</code>. */
+  public BigDecimal getActualDistance() {
+    return (BigDecimal) get(23);
+  }
+
+  /** Setter for <code>delivery.p_shipment.actual_duration</code>. */
+  public void setActualDuration(BigDecimal value) {
+    set(24, value);
+  }
+
+  /** Getter for <code>delivery.p_shipment.actual_duration</code>. */
+  public BigDecimal getActualDuration() {
+    return (BigDecimal) get(24);
+  }
+
+  /** Setter for <code>delivery.p_shipment.estimated_distance</code>. */
+  public void setEstimatedDistance(BigDecimal value) {
+    set(25, value);
+  }
+
+  /** Getter for <code>delivery.p_shipment.estimated_distance</code>. */
+  public BigDecimal getEstimatedDistance() {
+    return (BigDecimal) get(25);
+  }
+
+  /** Setter for <code>delivery.p_shipment.estimated_duration</code>. */
+  public void setEstimatedDuration(BigDecimal value) {
+    set(26, value);
+  }
+
+  /** Getter for <code>delivery.p_shipment.estimated_duration</code>. */
+  public BigDecimal getEstimatedDuration() {
+    return (BigDecimal) get(26);
+  }
+
   // -------------------------------------------------------------------------
   // Primary key information
   // -------------------------------------------------------------------------
@@ -287,7 +328,11 @@ public class PShipmentRecord extends UpdatableRecordImpl<PShipmentRecord> {
       UUID createdBy,
       UUID updatedBy,
       OffsetDateTime deletedAt,
-      UUID deletedBy) {
+      UUID deletedBy,
+      BigDecimal actualDistance,
+      BigDecimal actualDuration,
+      BigDecimal estimatedDistance,
+      BigDecimal estimatedDuration) {
     super(PShipment.P_SHIPMENT);
 
     setId(id);
@@ -313,6 +358,10 @@ public class PShipmentRecord extends UpdatableRecordImpl<PShipmentRecord> {
     setUpdatedBy(updatedBy);
     setDeletedAt(deletedAt);
     setDeletedBy(deletedBy);
+    setActualDistance(actualDistance);
+    setActualDuration(actualDuration);
+    setEstimatedDistance(estimatedDistance);
+    setEstimatedDuration(estimatedDuration);
     resetChangedOnNotNull();
   }
 }

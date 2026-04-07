@@ -80,6 +80,30 @@ public class PDelivery extends TableImpl<PDeliveryRecord> {
   public final TableField<PDeliveryRecord, UUID> DELETED_BY =
       createField(DSL.name("deleted_by"), SQLDataType.UUID, this, "");
 
+  /** The column <code>delivery.p_delivery.delivery_address</code>. */
+  public final TableField<PDeliveryRecord, String> DELIVERY_ADDRESS =
+      createField(DSL.name("delivery_address"), SQLDataType.VARCHAR(255), this, "");
+
+  /** The column <code>delivery.p_delivery.destination_hub_id</code>. */
+  public final TableField<PDeliveryRecord, UUID> DESTINATION_HUB_ID =
+      createField(DSL.name("destination_hub_id"), SQLDataType.UUID, this, "");
+
+  /** The column <code>delivery.p_delivery.recipient</code>. */
+  public final TableField<PDeliveryRecord, String> RECIPIENT =
+      createField(DSL.name("recipient"), SQLDataType.VARCHAR(255), this, "");
+
+  /** The column <code>delivery.p_delivery.recipient_slack_id</code>. */
+  public final TableField<PDeliveryRecord, String> RECIPIENT_SLACK_ID =
+      createField(DSL.name("recipient_slack_id"), SQLDataType.VARCHAR(255), this, "");
+
+  /** The column <code>delivery.p_delivery.source_hub_id</code>. */
+  public final TableField<PDeliveryRecord, UUID> SOURCE_HUB_ID =
+      createField(DSL.name("source_hub_id"), SQLDataType.UUID, this, "");
+
+  /** The column <code>delivery.p_delivery.vendor_delivery_manager_id</code>. */
+  public final TableField<PDeliveryRecord, UUID> VENDOR_DELIVERY_MANAGER_ID =
+      createField(DSL.name("vendor_delivery_manager_id"), SQLDataType.UUID, this, "");
+
   private PDelivery(Name alias, Table<PDeliveryRecord> aliased) {
     this(alias, aliased, (Field<?>[]) null, null);
   }

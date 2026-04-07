@@ -8,6 +8,8 @@ import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.*;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,34 +73,49 @@ public class Shipment extends BaseAudit {
 
   @Version private int _version;
 
+  private BigDecimal estimatedDistance;
+  private BigDecimal estimatedDuration;
+  private BigDecimal actualDistance;
+  private BigDecimal actualDuration;
+
   private Instant shippedAt;
   private Instant arrivedAt;
   private Instant completedAt;
 
-  private Shipment(Delivery delivery, int sequence, Node fromNode, Node toNode) {
+  private Shipment(
+      Delivery delivery,
+      int sequence,
+      Node fromNode,
+      Node toNode,
+      BigDecimal estimatedDistance,
+      BigDecimal estimatedDuration) {
     this.delivery = delivery;
     this.sequence = sequence;
     this.type = resolveType(fromNode, toNode);
     this.from = fromNode;
     this.to = toNode;
+    this.estimatedDistance = estimatedDistance;
+    this.estimatedDuration = estimatedDuration;
   }
 
-  public static Shipment create(Delivery delivery, int sequence, Node fromNode, Node toNode) {
-    return new Shipment(delivery, sequence, fromNode, toNode);
-  }
-
-  public static List<Shipment> createList(Delivery delivery, List<Node> nodes) {
-    List<Shipment> shipments = new ArrayList<>();
-
-    if (nodes.getLast().getType() != NodeType.VENDOR) throw new InvalidNodeInformationException();
-    if (nodes.stream().limit(nodes.size() - 1).anyMatch(n -> n.getType() == NodeType.VENDOR))
+  public static List<Shipment> createList(Delivery delivery, List<RouteNode> nodes) {
+    if (nodes == null || nodes.size() < 2) throw new InvalidNodeInformationException();
+    if (nodes.getLast().type() != NodeType.VENDOR) throw new InvalidNodeInformationException();
+    if (nodes.stream().limit(nodes.size() - 1).anyMatch(n -> n.type() == NodeType.VENDOR))
       throw new InvalidNodeInformationException();
 
+    List<Shipment> shipments = new ArrayList<>();
     for (int i = 0; i < nodes.size() - 1; i++) {
-      Node fromNode = nodes.get(i);
-      Node toNode = nodes.get(i + 1);
-      Shipment shipment = new Shipment(delivery, i + 1, fromNode, toNode);
-      shipments.add(shipment);
+      RouteNode from = nodes.get(i);
+      RouteNode to = nodes.get(i + 1);
+      shipments.add(
+          new Shipment(
+              delivery,
+              i + 1,
+              Node.of(from.type(), from.id(), from.name()),
+              Node.of(to.type(), to.id(), to.name()),
+              from.distance(),
+              from.duration()));
     }
     return shipments;
   }
@@ -194,9 +211,17 @@ public class Shipment extends BaseAudit {
   public void complete(DeliveryEvents events) {
     transitionTo(ShipmentStatus.COMPLETED);
     this.completedAt = Instant.now();
+    if (this.shippedAt != null) {
+      this.actualDuration =
+          BigDecimal.valueOf(Duration.between(this.shippedAt, this.completedAt).toMinutes());
+    }
     if (type == ShipmentType.HUB_TO_VENDOR) {
       events.deliveryCompleted(delivery);
     } else events.shipmentCompleted(this);
+  }
+
+  public void recordActualDistance(BigDecimal distance) {
+    this.actualDistance = distance;
   }
 
   public void fail() {
