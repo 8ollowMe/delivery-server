@@ -6,6 +6,8 @@ import static com.followMe.delivery_server.jooq.tables.PShipment.P_SHIPMENT;
 import com.followMe.delivery_server.delivery.domain.DeliverySearchCondition;
 import com.followMe.delivery_server.delivery.domain.enums.DeliverySortBy;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
+import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
+import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -76,31 +78,58 @@ public class DeliveryConditionBuilder {
               DSL.selectOne()
                   .from(P_SHIPMENT)
                   .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                  .and(P_SHIPMENT.STATUS.eq("FAILED")));
-      case IN_PROGRESS ->
-          DSL.exists(
-              DSL.selectOne()
-                  .from(P_SHIPMENT)
-                  .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                  .and(P_SHIPMENT.STATUS.in("SHIPPED", "IN_TRANSIT", "ARRIVED")));
+                  .and(P_SHIPMENT.STATUS.eq(ShipmentStatus.FAILED.name())));
       case COMPLETED ->
           DSL.notExists(
               DSL.selectOne()
                   .from(P_SHIPMENT)
                   .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                  .and(P_SHIPMENT.STATUS.ne("COMPLETED")));
+                  .and(P_SHIPMENT.STATUS.ne(ShipmentStatus.COMPLETED.name())));
       case CANCELLED ->
           DSL.notExists(
               DSL.selectOne()
                   .from(P_SHIPMENT)
                   .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                  .and(P_SHIPMENT.STATUS.ne("CANCELLED")));
-      case READY ->
-          DSL.notExists(
+                  .and(P_SHIPMENT.STATUS.ne(ShipmentStatus.CANCELLED.name())));
+      case HUB_WAITING ->
+          DSL.exists(
               DSL.selectOne()
                   .from(P_SHIPMENT)
                   .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                  .and(P_SHIPMENT.STATUS.ne("PENDING")));
+                  .and(P_SHIPMENT.TYPE.eq(ShipmentType.HUB_TO_HUB.name()))
+                  .and(P_SHIPMENT.STATUS.eq(ShipmentStatus.PENDING.name())));
+      case HUB_MOVING ->
+          DSL.exists(
+              DSL.selectOne()
+                  .from(P_SHIPMENT)
+                  .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+                  .and(P_SHIPMENT.TYPE.eq(ShipmentType.HUB_TO_HUB.name()))
+                  .and(
+                      P_SHIPMENT.STATUS.in(
+                          ShipmentStatus.SHIPPED.name(), ShipmentStatus.IN_TRANSIT.name())));
+      case DESTINATION_HUB_ARRIVED ->
+          DSL.exists(
+              DSL.selectOne()
+                  .from(P_SHIPMENT)
+                  .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+                  .and(P_SHIPMENT.TYPE.eq(ShipmentType.HUB_TO_HUB.name()))
+                  .and(P_SHIPMENT.STATUS.eq(ShipmentStatus.ARRIVED.name())));
+      case DELIVERING ->
+          DSL.exists(
+              DSL.selectOne()
+                  .from(P_SHIPMENT)
+                  .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+                  .and(P_SHIPMENT.TYPE.eq(ShipmentType.HUB_TO_VENDOR.name()))
+                  .and(
+                      P_SHIPMENT.STATUS.in(
+                          ShipmentStatus.SHIPPED.name(), ShipmentStatus.IN_TRANSIT.name())));
+      case VENDOR_MOVING ->
+          DSL.exists(
+              DSL.selectOne()
+                  .from(P_SHIPMENT)
+                  .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
+                  .and(P_SHIPMENT.TYPE.eq(ShipmentType.HUB_TO_VENDOR.name()))
+                  .and(P_SHIPMENT.STATUS.eq(ShipmentStatus.ARRIVED.name())));
     };
   }
 
@@ -121,28 +150,32 @@ public class DeliveryConditionBuilder {
                 DSL.selectOne()
                     .from(P_SHIPMENT)
                     .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                    .and(P_SHIPMENT.STATUS.eq("FAILED"))),
+                    .and(P_SHIPMENT.STATUS.eq(ShipmentStatus.FAILED.name()))),
             4)
         .when(
             DSL.exists(
                 DSL.selectOne()
                     .from(P_SHIPMENT)
                     .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                    .and(P_SHIPMENT.STATUS.in("SHIPPED", "IN_TRANSIT", "ARRIVED"))),
+                    .and(
+                        P_SHIPMENT.STATUS.in(
+                            ShipmentStatus.SHIPPED.name(),
+                            ShipmentStatus.IN_TRANSIT.name(),
+                            ShipmentStatus.ARRIVED.name()))),
             2)
         .when(
             DSL.notExists(
                 DSL.selectOne()
                     .from(P_SHIPMENT)
                     .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                    .and(P_SHIPMENT.STATUS.ne("COMPLETED"))),
+                    .and(P_SHIPMENT.STATUS.ne(ShipmentStatus.COMPLETED.name()))),
             3)
         .when(
             DSL.notExists(
                 DSL.selectOne()
                     .from(P_SHIPMENT)
                     .where(P_SHIPMENT.DELIVERY_ID.eq(P_DELIVERY.ID))
-                    .and(P_SHIPMENT.STATUS.ne("CANCELLED"))),
+                    .and(P_SHIPMENT.STATUS.ne(ShipmentStatus.CANCELLED.name()))),
             5)
         .otherwise(1);
   }
