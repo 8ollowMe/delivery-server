@@ -24,7 +24,7 @@ public class DeliveryManagerAssignerImpl implements DeliveryManagerAssigner {
   @Override
   public DeliveryManager assignDeliveryManager(UUID hubId, NodeType type) {
     List<DeliveryManagerInfo> managerInfos = userClient.getDeliveryManagers(hubId, type);
-    List<UUID> managerIds = managerInfos.stream().map(DeliveryManagerInfo::id).toList();
+    List<UUID> managerIds = managerInfos.stream().map(DeliveryManagerInfo::userId).toList();
 
     Map<UUID, Integer> assignedCounts =
         deliveryRepository.countByDeliveryManagerIds(managerIds, ShipmentStatus.done());
@@ -33,14 +33,14 @@ public class DeliveryManagerAssignerImpl implements DeliveryManagerAssigner {
             .map(
                 info ->
                     new DeliveryManagerCandidate(
-                        info.id(),
+                        info.userId(),
                         info.name(),
-                        info.number(),
-                        assignedCounts.getOrDefault(info.id(), 0)))
+                        info.sequence(),
+                        assignedCounts.getOrDefault(info.userId(), 0)))
             .toList();
 
     DeliveryManagerInfo selected = selector.select(candidates);
-    return DeliveryManager.of(selected.id(), selected.name());
+    return DeliveryManager.of(selected.userId(), selected.name());
   }
 
   @Override
