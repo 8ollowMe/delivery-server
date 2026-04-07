@@ -3,6 +3,7 @@ package com.followMe.delivery_server.delivery.application.dto;
 import com.followMe.delivery_server.delivery.domain.Delivery;
 import com.followMe.delivery_server.delivery.domain.enums.DeliveryStatus;
 import com.followMe.delivery_server.delivery.domain.enums.ShipmentStatus;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +21,12 @@ public record StatusResponse(
                         new DeliveryResponse.NodeInfo(
                             s.getTo().getId(), s.getTo().getType(), s.getTo().getName()),
                         s.getStatus(),
-                        s.getSequence()))
+                        s.getSequence(),
+                        s.getDeliveryManager() != null ? s.getDeliveryManager().getId() : null,
+                        s.getEstimatedDistance(),
+                        s.getEstimatedDuration(),
+                        s.getActualDistance(),
+                        s.getActualDuration()))
             .toList();
     return new StatusResponse(delivery.getId(), delivery.getDeliveryStatus(), shipments);
   }
@@ -30,5 +36,10 @@ public record StatusResponse(
       DeliveryResponse.NodeInfo origin,
       DeliveryResponse.NodeInfo destination,
       ShipmentStatus status,
-      int sequence) {}
+      int sequence,
+      UUID deliveryManagerId,
+      BigDecimal estimatedDistance,
+      BigDecimal estimatedDuration,
+      BigDecimal actualDistance,
+      BigDecimal actualDuration) {}
 }
