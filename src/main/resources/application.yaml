@@ -59,7 +59,7 @@ feign:
 resilience4j:
   circuitbreaker:
     instances:
-      hub-service:
+      hub-server:
         failure-rate-threshold: 50          # 회로 차단 기준
         minimum-number-of-calls: 5          # 최소 통계 횟수
         sliding-window-size: 10             # 최근 호출 기준 개수

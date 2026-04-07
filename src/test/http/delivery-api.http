@@ -14,7 +14,7 @@ Authorization: Bearer dummy-token-for-local
 X-User-Id: 00000000-0000-0000-0000-000000000001
 X-Role: MASTER
 
-### 2. 배달 생성 (Gateway) - hub-service Feign 호출 발생
+### 2. 배달 생성 (Gateway) - hub-server Feign 호출 발생
 POST http://localhost:8000/api/v1/deliveries
 Content-Type: application/json
 Authorization: Bearer dummy-token-for-local
