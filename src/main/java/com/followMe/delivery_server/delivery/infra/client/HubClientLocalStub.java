@@ -4,6 +4,7 @@ import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import com.followMe.delivery_server.delivery.infra.client.dto.HubRouteResponse;
 import com.followMe.delivery_server.delivery.infra.exception.HubClientUnavailableException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,22 @@ public class HubClientLocalStub implements HubClient {
     }
     return new HubRouteResponse(
         List.of(
-            new HubNodeInfo(hubId, NodeType.HUB, "출발 허브", 1),
-            new HubNodeInfo(MIDDLE_HUB_ID, NodeType.HUB, "중간 허브", 2),
-            new HubNodeInfo(vendorId, NodeType.VENDOR, "도착 업체", 3)));
+            new HubNodeInfo(
+                hubId,
+                NodeType.HUB,
+                "출발 허브",
+                "출발 허브 주소",
+                1,
+                new BigDecimal("150"),
+                new BigDecimal("120")),
+            new HubNodeInfo(
+                MIDDLE_HUB_ID,
+                NodeType.HUB,
+                "중간 허브",
+                "중간 허브 주소",
+                2,
+                new BigDecimal("200"),
+                new BigDecimal("180")),
+            new HubNodeInfo(vendorId, NodeType.VENDOR, "도착 업체", "도착 업체 주소", 3, null, null)));
   }
 }

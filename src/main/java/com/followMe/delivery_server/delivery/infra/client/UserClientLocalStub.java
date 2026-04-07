@@ -53,7 +53,8 @@ public class UserClientLocalStub implements UserClient {
     if (userId.equals(UNKNOWN_USER_ID)) {
       throw new UserClientUnavailableException();
     }
-    return new UserInfo(userId, "테스트 사용자", DEFAULT_HUB_ID, UUID.randomUUID(), UserRole.DELIVERY);
+    return new UserInfo(
+        userId, "테스트 사용자", "slackId-00001", DEFAULT_HUB_ID, UUID.randomUUID(), UserRole.DELIVERY);
   }
 
   @Override
