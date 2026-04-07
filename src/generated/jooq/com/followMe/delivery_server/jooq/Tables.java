@@ -3,24 +3,16 @@
  */
 package com.followMe.delivery_server.jooq;
 
-
 import com.followMe.delivery_server.jooq.tables.PDelivery;
 import com.followMe.delivery_server.jooq.tables.PShipment;
 
-
-/**
- * Convenience access to all tables in delivery.
- */
-@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
+/** Convenience access to all tables in delivery. */
+@SuppressWarnings({"all", "unchecked", "rawtypes", "this-escape"})
 public class Tables {
 
-    /**
-     * The table <code>delivery.p_delivery</code>.
-     */
-    public static final PDelivery P_DELIVERY = PDelivery.P_DELIVERY;
+  /** The table <code>delivery.p_delivery</code>. */
+  public static final PDelivery P_DELIVERY = PDelivery.P_DELIVERY;
 
-    /**
-     * The table <code>delivery.p_shipment</code>.
-     */
-    public static final PShipment P_SHIPMENT = PShipment.P_SHIPMENT;
+  /** The table <code>delivery.p_shipment</code>. */
+  public static final PShipment P_SHIPMENT = PShipment.P_SHIPMENT;
 }
