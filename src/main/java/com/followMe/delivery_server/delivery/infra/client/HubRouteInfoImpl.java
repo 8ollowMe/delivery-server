@@ -1,7 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
+import com.followMe.delivery_server.delivery.domain.RouteNode;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
-import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,10 @@ public class HubRouteInfoImpl implements HubRouteInfo {
   private final HubClient client;
 
   @Override
-  public List<HubNodeInfo> getRouteNodes(UUID fromHubId, UUID toVendorId) {
-    return client.getNodes(fromHubId, toVendorId).toNodes();
+  public List<RouteNode> getRouteNodes(UUID fromHubId, UUID toVendorId) {
+    return client.getNodes(fromHubId, toVendorId).nodes().stream()
+        .map(
+            n -> new RouteNode(n.id(), n.type(), n.name(), n.address(), n.distance(), n.duration()))
+        .toList();
   }
 }

@@ -16,7 +16,6 @@ import com.followMe.delivery_server.delivery.domain.service.DeliverySequenceUpda
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
 import com.followMe.delivery_server.delivery.infra.client.UserClient;
-import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,7 @@ public class DeliveryService {
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
-    List<HubNodeInfo> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
+    List<RouteNode> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
     String vendorAddress = nodes.getLast().address();
 
     UserInfo recipient = userClient.getUserInfo(command.recipientId());

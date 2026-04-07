@@ -7,7 +7,6 @@ import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.*;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
-import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -99,7 +98,7 @@ public class Shipment extends BaseAudit {
     this.estimatedDuration = estimatedDuration;
   }
 
-  public static List<Shipment> createList(Delivery delivery, List<HubNodeInfo> nodes) {
+  public static List<Shipment> createList(Delivery delivery, List<RouteNode> nodes) {
     if (nodes == null || nodes.size() < 2) throw new InvalidNodeInformationException();
     if (nodes.getLast().type() != NodeType.VENDOR) throw new InvalidNodeInformationException();
     if (nodes.stream().limit(nodes.size() - 1).anyMatch(n -> n.type() == NodeType.VENDOR))
@@ -107,8 +106,8 @@ public class Shipment extends BaseAudit {
 
     List<Shipment> shipments = new ArrayList<>();
     for (int i = 0; i < nodes.size() - 1; i++) {
-      HubNodeInfo from = nodes.get(i);
-      HubNodeInfo to = nodes.get(i + 1);
+      RouteNode from = nodes.get(i);
+      RouteNode to = nodes.get(i + 1);
       shipments.add(
           new Shipment(
               delivery,

@@ -8,7 +8,6 @@ import com.followMe.delivery_server.delivery.domain.enums.ShipmentType;
 import com.followMe.delivery_server.delivery.domain.exception.ForbiddenException;
 import com.followMe.delivery_server.delivery.domain.exception.InvalidDeliveryStatusException;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
-import com.followMe.delivery_server.delivery.infra.client.dto.HubNodeInfo;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,14 +54,14 @@ public class Delivery extends BaseAudit {
       String deliveryAddress,
       String recipient,
       String recipientSlackId,
-      List<HubNodeInfo> nodes) {
+      List<RouteNode> nodes) {
     this.orderId = OrderId.of(orderId);
     this.sourceHubId = sourceHubId;
     this.destinationHubId =
         nodes.stream()
             .filter(n -> n.type() == NodeType.HUB)
             .reduce((a, b) -> b)
-            .map(HubNodeInfo::id)
+            .map(RouteNode::id)
             .orElse(null);
     this.deliveryAddress = deliveryAddress;
     this.recipient = recipient;
@@ -76,7 +75,7 @@ public class Delivery extends BaseAudit {
       String deliveryAddress,
       String recipient,
       String recipientSlackId,
-      List<HubNodeInfo> nodes) {
+      List<RouteNode> nodes) {
     return new Delivery(orderId, sourceHubId, deliveryAddress, recipient, recipientSlackId, nodes);
   }
 
