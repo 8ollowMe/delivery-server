@@ -1,0 +1,513 @@
+openapi: 3.1.0
+info:
+  title: Delivery Server API
+  description: 배송 서버 API 문서
+  version: v1
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+paths:
+  /internal/v1/deliveries:
+    post:
+      tags:
+      - delivery-internal-controller
+      operationId: createDelivery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Create"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DeliveryCreate"
+  /internal/v1/shipments/{shipmentId}/reassign:
+    patch:
+      tags:
+      - shipment-internal-controller
+      operationId: reassignDeliveryManager
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /internal/v1/deliveries/{deliveryId}/cancel:
+    patch:
+      tags:
+      - delivery-internal-controller
+      operationId: cancelDelivery
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/shipments/{shipmentId}/status:
+    patch:
+      tags:
+      - shipment-controller
+      operationId: updateStatus
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatus"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/shipments/{shipmentId}/reassign:
+    patch:
+      tags:
+      - shipment-controller
+      operationId: reassignDeliveryManager_1
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDeliveryManager"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/deliveries/{deliveryId}/cancel:
+    patch:
+      tags:
+      - delivery-controller
+      operationId: cancelDelivery_1
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /internal/v1/deliveries/{deliveryId}/status:
+    get:
+      tags:
+      - delivery-internal-controller
+      operationId: getDelivery
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+  /api/v1/shipments/{shipmentId}:
+    get:
+      tags:
+      - shipment-controller
+      operationId: getShipment
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/deliveries:
+    get:
+      tags:
+      - delivery-controller
+      operationId: getDeliveries
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      - name: request
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/DeliverySearchRequest"
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/deliveries/{deliveryId}:
+    get:
+      tags:
+      - delivery-controller
+      operationId: getDelivery_1
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+    delete:
+      tags:
+      - delivery-controller
+      operationId: deleteDelivery
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/deliveries/{deliveryId}/shipments:
+    get:
+      tags:
+      - delivery-controller
+      operationId: getShipmentsByDeliveryId
+      parameters:
+      - name: deliveryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/deliveries/order/{orderId}:
+    get:
+      tags:
+      - delivery-controller
+      operationId: getDeliveryByOrderId
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: user
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserContext"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+components:
+  schemas:
+    Create:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        sourceHubId:
+          type: string
+          format: uuid
+        vendorId:
+          type: string
+          format: uuid
+    DeliveryCreate:
+      type: object
+      properties:
+        deliveryId:
+          type: string
+          format: uuid
+        waypoints:
+          type: array
+          items:
+            type: string
+        deliveryManagerId:
+          type: string
+          format: uuid
+        deliveryManagerName:
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data: {}
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        fieldErrors:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldError"
+    FieldError:
+      type: object
+      properties:
+        field:
+          type: string
+        rejectedValue: {}
+        reason:
+          type: string
+    UserContext:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+          - VENDOR
+          - DELIVERY
+          - HUB
+          - MASTER
+        hubId:
+          type: string
+          format: uuid
+        vendorId:
+          type: string
+          format: uuid
+    UpdateStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - PENDING
+          - SHIPPED
+          - IN_TRANSIT
+          - ARRIVED
+          - COMPLETED
+          - FAILED
+          - CANCELLED
+      required:
+      - status
+    UpdateDeliveryManager:
+      type: object
+      properties:
+        deliveryManagerId:
+          type: string
+          format: uuid
+      required:
+      - deliveryManagerId
+    NodeInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+          - HUB
+          - VENDOR
+        name:
+          type: string
+    ShipmentSummary:
+      type: object
+      properties:
+        shipmentId:
+          type: string
+          format: uuid
+        origin:
+          $ref: "#/components/schemas/NodeInfo"
+        destination:
+          $ref: "#/components/schemas/NodeInfo"
+        status:
+          type: string
+          enum:
+          - PENDING
+          - SHIPPED
+          - IN_TRANSIT
+          - ARRIVED
+          - COMPLETED
+          - FAILED
+          - CANCELLED
+        sequence:
+          type: integer
+          format: int32
+    StatusResponse:
+      type: object
+      properties:
+        deliveryId:
+          type: string
+          format: uuid
+        deliveryStatus:
+          type: string
+          enum:
+          - READY
+          - IN_PROGRESS
+          - COMPLETED
+          - FAILED
+          - CANCELLED
+        shipments:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShipmentSummary"
+    DeliverySearchRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - READY
+          - IN_PROGRESS
+          - COMPLETED
+          - FAILED
+          - CANCELLED
+        deliveryManagerId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        hubId:
+          type: string
+          format: uuid
+        vendorId:
+          type: string
+          format: uuid
+        keyword:
+          type: string
+        sortBy:
+          type: string
+          enum:
+          - CREATED_AT
+          - SHIPPED_AT
+          - ARRIVED_AT
+          - STATUS
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
