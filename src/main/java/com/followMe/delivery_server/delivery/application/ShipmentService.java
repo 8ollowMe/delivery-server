@@ -71,6 +71,7 @@ public class ShipmentService {
     shipment.assignDeliveryManager(newManager, events);
   }
 
+  @Transactional
   public void assignManagerForInternal(UUID shipmentId) {
     Shipment shipment =
         deliveryRepository.findShipmentById(shipmentId).orElseThrow(ShipmentNotFoundException::new);

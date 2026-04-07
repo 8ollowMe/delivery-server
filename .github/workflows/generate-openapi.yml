@@ -11,21 +11,6 @@ jobs:
     permissions:
       contents: write
 
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_DB: followme
-          POSTGRES_USER: followme
-          POSTGRES_PASSWORD: followme
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +24,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Generate OpenAPI Spec
-        run: ./gradlew generateOpenApiDocs --no-daemon -Pgpr.user=${{ github.actor }} -Pgpr.key=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew generateOpenApiDocs --no-daemon -x generateJooq -Pgpr.user=${{ github.actor }} -Pgpr.key=${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit OpenAPI spec
         run: |

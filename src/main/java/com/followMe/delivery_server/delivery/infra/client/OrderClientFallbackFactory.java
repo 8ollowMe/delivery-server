@@ -1,6 +1,7 @@
 package com.followMe.delivery_server.delivery.infra.client;
 
 import com.followMe.delivery_server.delivery.application.dto.OrderRequest;
+import com.followMe.delivery_server.delivery.infra.exception.OrderClientUnavailableException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -19,7 +20,7 @@ public class OrderClientFallbackFactory implements FallbackFactory<OrderClient> 
             "OrderClient.deliveryManagerAssigned fallback triggered for orderId: {}. Cause: {}",
             orderId,
             cause.getMessage());
-        // Fallback logic can be implemented here, such as logging or throwing a custom exception
+        throw new OrderClientUnavailableException();
       }
     };
   }
