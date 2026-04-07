@@ -12,9 +12,9 @@ import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundEx
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
 import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
+import com.followMe.delivery_server.delivery.domain.service.DeliverySequenceUpdater;
 import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
 import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
-import com.followMe.delivery_server.delivery.infra.client.UserClient;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class DeliveryService {
   private final DeliveryManagerAssigner assigner;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
-  private final UserClient userClient;
+  private final DeliverySequenceUpdater sequenceUpdater;
   private final OrderDeliveryAssigner orderDeliveryAssigner;
   private final DeliveryEvents events;
 
@@ -43,7 +43,7 @@ public class DeliveryService {
     NodeType type = shipment.getTo().getType();
     DeliveryManager manager = assigner.assignDeliveryManager(command.sourceHubId(), type);
     shipment.assignDeliveryManager(manager, events);
-    userClient.updateDeliverySequence(manager.getId());
+    sequenceUpdater.updateSequence(manager.getId());
     orderDeliveryAssigner.assignDeliveryToOrder(delivery.getOrderId().getValue(), manager.getId());
     return DeliveryResponse.DeliveryCreate.of(delivery, manager);
   }
