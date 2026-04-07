@@ -31,6 +31,14 @@ public class Delivery extends BaseAudit {
   @AttributeOverrides({@AttributeOverride(name = "value", column = @Column(name = "order_id"))})
   private OrderId orderId;
 
+  @Column(columnDefinition = "uuid")
+  private UUID sourceHubId;
+
+  @Column(columnDefinition = "uuid")
+  private UUID destinationHubId;
+
+  private String deliveryAddress;
+
   @OrderBy("sequence ASC")
   @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Shipment> shipments = new ArrayList<>();
