@@ -10,12 +10,7 @@ import com.followMe.delivery_server.delivery.domain.enums.NodeType;
 import com.followMe.delivery_server.delivery.domain.event.DeliveryEvents;
 import com.followMe.delivery_server.delivery.domain.exception.DeliveryNotFoundException;
 import com.followMe.delivery_server.delivery.domain.repository.DeliveryRepository;
-import com.followMe.delivery_server.delivery.domain.service.DeliveryManagerAssigner;
-import com.followMe.delivery_server.delivery.domain.service.DeliveryPermissionChecker;
-import com.followMe.delivery_server.delivery.domain.service.DeliverySequenceUpdater;
-import com.followMe.delivery_server.delivery.domain.service.HubRouteInfo;
-import com.followMe.delivery_server.delivery.domain.service.OrderDeliveryAssigner;
-import com.followMe.delivery_server.delivery.infra.client.UserClient;
+import com.followMe.delivery_server.delivery.domain.service.*;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,20 +23,20 @@ public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
   private final HubRouteInfo hubRouteInfo;
-  private final UserClient userClient;
   private final DeliveryManagerAssigner assigner;
   private final DeliveryQueryPort deliveryQueryPort;
   private final DeliveryPermissionChecker permissionChecker;
   private final DeliverySequenceUpdater sequenceUpdater;
   private final OrderDeliveryAssigner orderDeliveryAssigner;
   private final DeliveryEvents events;
+  private final UserInfoGetService userInfoGetService;
 
   @Transactional
   public DeliveryResponse.DeliveryCreate createDelivery(DeliveryRequest.Create command) {
     List<RouteNode> nodes = hubRouteInfo.getRouteNodes(command.sourceHubId(), command.vendorId());
     String vendorAddress = nodes.getLast().address();
 
-    UserInfo recipient = userClient.getUserInfo(command.recipientId());
+    UserInfo recipient = userInfoGetService.getUserInfo(command.recipientId());
 
     Delivery delivery =
         Delivery.create(
