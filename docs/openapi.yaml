@@ -336,6 +336,9 @@ components:
         vendorId:
           type: string
           format: uuid
+        recipientId:
+          type: string
+          format: uuid
     DeliveryCreate:
       type: object
       properties:
@@ -456,6 +459,17 @@ components:
         sequence:
           type: integer
           format: int32
+        deliveryManagerId:
+          type: string
+          format: uuid
+        estimatedDistance:
+          type: number
+        estimatedDuration:
+          type: number
+        actualDistance:
+          type: number
+        actualDuration:
+          type: number
     StatusResponse:
       type: object
       properties:
@@ -465,8 +479,11 @@ components:
         deliveryStatus:
           type: string
           enum:
-          - READY
-          - IN_PROGRESS
+          - HUB_WAITING
+          - HUB_MOVING
+          - DESTINATION_HUB_ARRIVED
+          - DELIVERING
+          - VENDOR_MOVING
           - COMPLETED
           - FAILED
           - CANCELLED
@@ -480,8 +497,11 @@ components:
         status:
           type: string
           enum:
-          - READY
-          - IN_PROGRESS
+          - HUB_WAITING
+          - HUB_MOVING
+          - DESTINATION_HUB_ARRIVED
+          - DELIVERING
+          - VENDOR_MOVING
           - COMPLETED
           - FAILED
           - CANCELLED
